@@ -22,7 +22,10 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "react-native-bootsplash"],
+    "plugins": [
+      "expo-router",
+      "react-native-bootsplash"
+    ],
     "experiments": {
       "typedRoutes": true
     },
@@ -33,6 +36,12 @@
       "eas": {
         "projectId": "852a94b8-0a33-43a7-a36a-42c33794489a"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/852a94b8-0a33-43a7-a36a-42c33794489a"
     }
   }
 }

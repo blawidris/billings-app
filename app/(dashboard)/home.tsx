@@ -26,6 +26,7 @@ export default function home() {
       setUser(userDataResponse.user);
       setWallet(userDataResponse.wallet);
       console.log(userDataResponse);
+      console.log(userDataResponse.wallet);
     };
 
     getInfo();
@@ -71,7 +72,7 @@ export default function home() {
           <View className="flex flex-col items-center p-5">
             <Text className="text-base text-white font-aeonik">Balance</Text>
             <Text className="text-4xl text-white font-aeonik-bold">
-              ₦{wallet.balance}
+              ₦{wallet?.balance}
             </Text>
             <View className="flex flex-row mt-3">
               <View
