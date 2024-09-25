@@ -1,13 +1,40 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Iconify } from "react-native-iconify";
 import Wifi from "@/assets/images/services/wifi.svg";
 import Phone from "@/assets/images/services/phone.svg";
 import Radio from "@/assets/images/services/radio.svg";
 import More from "@/assets/images/services/more.svg";
+import { router } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserData } from "@/services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function home() {
+  const dispatch = useDispatch();
+  const username = useSelector((state: any) => state.bvn.username);
+  const [user, setUser] = useState();
+  const firstName = useSelector((state: any) => state.signUp.firstName);
+  const lastName = useSelector((state: any) => state.signUp.lastName);
+
+  useEffect(() => {
+    const getInfo = async () => {
+      const token = await AsyncStorage.getItem("token");
+      const userDataResponse = await getUserData(token);
+      setUser(userDataResponse.user);
+      console.log(userDataResponse);
+    };
+
+    getInfo();
+    // if (!user) {
+    //   console.log("No user found");
+    // } else {
+    //   console.log("User found:", user);
+    // }
+  }, []);
+
+  //console.log("User in Component:", username);
   return (
     <SafeAreaView className="flex-1 h-full bg-white">
       <View className="flex flex-row items-center justify-between p-5">
@@ -22,7 +49,7 @@ export default function home() {
           </View>
           <View className="ml-2">
             <Text className="text-[#555555] font-raleway-semibold text-sm font-semibold">
-              Hello Dev
+              Hello {user?.firstName || firstName}
             </Text>
             <Text className="font-raleway-medium font-normal text-[#909090] text-xs">
               What bills are you paying today?
@@ -37,7 +64,7 @@ export default function home() {
         <View className="relative w-full h-auto bg-primary rounded-2xl">
           <Image
             source={require("@/assets/images/card-pattern.png")}
-            className="absolute opacity-20 w-full h-full"
+            className="absolute w-full h-full opacity-20"
           />
           <View className="flex flex-col items-center p-5">
             <Text className="text-base text-white font-aeonik">Balance</Text>
@@ -50,7 +77,7 @@ export default function home() {
                 className="flex flex-row items-center p-2 mr-1 rounded-full"
               >
                 <Text className="mr-1 text-sm text-white font-aeonik">
-                  PB ID: @st_emmanuel
+                  PB ID: @{username}
                 </Text>
                 <Image
                   source={require("@/assets/images/clipboard.png")}
@@ -73,6 +100,7 @@ export default function home() {
             <View className="flex flex-row gap-4 mt-5">
               <View className="items-center gap-2">
                 <TouchableOpacity
+                  onPress={() => router.push("/add_money")}
                   style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
                   className="flex items-center justify-center p-2 rounded-full w-14 h-14"
                 >
@@ -129,7 +157,10 @@ export default function home() {
       <View className="px-5">
         <Text className="text-lg font-aeonik">Services</Text>
         <View className="flex flex-row gap-3 mt-2">
-          <TouchableOpacity className="flex items-center justify-center p-3 border border-gray-400 rounded-md">
+          <TouchableOpacity
+            onPress={() => router.push("/airtime")}
+            className="flex items-center justify-center p-3 border border-gray-400 rounded-md"
+          >
             <Phone width={50} height={50} />
             <Text className="font-aeonik">Airtime</Text>
           </TouchableOpacity>
@@ -158,23 +189,23 @@ export default function home() {
           </TouchableOpacity>
         </View>
         <View className="mt-2">
-          <View className="bg-white p-3 rounded-lg">
+          <View className="p-3 bg-white rounded-lg">
             <View className="flex flex-row items-center justify-between">
               <View className="flex flex-row items-center">
                 <Image
-                  className="h-10 w-10 mr-1"
+                  className="w-10 h-10 mr-1"
                   source={require("@/assets/images/mtn.png")}
                 />
                 <View className="ml-1">
-                  <Text className="font-aeonik text-sm">Airtime Recharge</Text>
+                  <Text className="text-sm font-aeonik">Airtime Recharge</Text>
                   <Text className="font-aeonik-bold text-[#253B4B] text-sm">
                     ₦700,000
                   </Text>
                 </View>
               </View>
 
-              <TouchableOpacity className="bg-primary p-2 px-3 rounded-full">
-                <Text className="font-aeonik-bold text-white text-sm">
+              <TouchableOpacity className="p-2 px-3 rounded-full bg-primary">
+                <Text className="text-sm text-white font-aeonik-bold">
                   Pay Now
                 </Text>
               </TouchableOpacity>

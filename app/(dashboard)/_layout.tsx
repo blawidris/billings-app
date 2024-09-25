@@ -21,6 +21,11 @@ export default function TabsView() {
       <Tabs.Screen name="home" options={{ title: "" }} />
       <Tabs.Screen name="services" options={{ title: "" }} />
       <Tabs.Screen name="profile" options={{ title: "" }} />
+      <Tabs.Screen name="about" options={{ title: "", href: null }} />
+      <Tabs.Screen name="airtime" options={{ title: "", href: null }} />
+      <Tabs.Screen name="add_money" options={{ title: "", href: null }} />
+      <Tabs.Screen name="transfer" options={{ title: "", href: null }} />
+      <Tabs.Screen name="card" options={{ title: "", href: null }} />
     </Tabs>
   );
 }

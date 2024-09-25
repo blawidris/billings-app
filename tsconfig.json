@@ -3,9 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -15,5 +13,7 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts",
     "custom.d.ts",
+    "services/AuthService.js",
+    "app/register.jsx"
   ]
 }

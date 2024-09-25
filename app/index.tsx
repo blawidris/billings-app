@@ -1,6 +1,15 @@
-import { Redirect } from "expo-router";
+import { Redirect, router } from "expo-router";
+import { useEffect } from "react";
 import { Text, View } from "react-native";
 
 export default function Index() {
-  return <Redirect href="/home" />;
+  const checkData = () => {
+    router.push("/login");
+  };
+
+  useEffect(() => {
+    setTimeout(checkData, 3000);
+  }, []);
+
+  return <Redirect href="/splashscreen" />;
 }
