@@ -15,6 +15,7 @@ export default function home() {
   const dispatch = useDispatch();
   const username = useSelector((state: any) => state.bvn.username);
   const [user, setUser] = useState();
+  const [wallet, setWallet] = useState();
   const firstName = useSelector((state: any) => state.signUp.firstName);
   const lastName = useSelector((state: any) => state.signUp.lastName);
 
@@ -23,6 +24,7 @@ export default function home() {
       const token = await AsyncStorage.getItem("token");
       const userDataResponse = await getUserData(token);
       setUser(userDataResponse.user);
+      setWallet(userDataResponse.wallet);
       console.log(userDataResponse);
     };
 
@@ -69,7 +71,7 @@ export default function home() {
           <View className="flex flex-col items-center p-5">
             <Text className="text-base text-white font-aeonik">Balance</Text>
             <Text className="text-4xl text-white font-aeonik-bold">
-              ₦50,000
+              ₦{wallet.balance}
             </Text>
             <View className="flex flex-row mt-3">
               <View
