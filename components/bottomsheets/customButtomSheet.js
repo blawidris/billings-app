@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import React, { forwardRef, useMemo, useState } from "react";
 import BottomSheet, { useBottomSheet } from "@gorhom/bottom-sheet";
@@ -122,7 +123,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                   }}
                 >
                   <Image
-                    source={require("@/assets/icons/mtn.png")}
+                    source={props.selectedOption.icon}
                     resizeMode="contain"
                   />
                   <View>
@@ -137,7 +138,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                         color: "rgba(31, 108, 171, 1)",
                       }}
                     >
-                      ₦10,000
+                      ₦{props.amount}
                     </Text>
                   </View>
                 </View>
@@ -168,7 +169,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                       color: "rgba(0, 0, 0, 1)",
                     }}
                   >
-                    09087656534
+                    {props.phoneNumber}
                   </Text>
                 </View>
                 <View
@@ -196,7 +197,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                       color: "rgba(0, 0, 0, 1)",
                     }}
                   >
-                    MTN/Airtime
+                    {props.selectedOption.name}/Airtime
                   </Text>
                 </View>
                 <View
@@ -224,7 +225,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                       color: "rgba(0, 0, 0, 1)",
                     }}
                   >
-                    MTN
+                    {props.selectedOption.name}
                   </Text>
                 </View>
                 <View
@@ -252,7 +253,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                       color: "rgba(0, 0, 0, 1)",
                     }}
                   >
-                    ₦10.00
+                    ₦{props.amount}
                   </Text>
                 </View>
               </View>
@@ -326,7 +327,11 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
               style={styles.payButton}
               onPress={props.handlePress}
             >
-              <Text style={styles.payButtonText}>Pay Now</Text>
+              {props.isLoading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text style={styles.payButtonText}>Pay Now</Text>
+              )}
             </TouchableOpacity>
           </View>
         );

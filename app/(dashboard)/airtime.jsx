@@ -18,21 +18,37 @@ import { useDispatch, useSelector } from "react-redux";
 import { setContacts } from "@/redux/slices/contact/contactSlice";
 import { CustomBottomSheet } from "@/components/bottomsheets/customButtomSheet";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { host } from "@/utils/env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 export default function BuyAirtimeScreen() {
   const [bottomSheetType, setBottomSheetType] = useState("saveBeneficiary");
 
   const options = [
-    { id: 1, name: "MTN", icon: require("@/assets/icons/mtn.png") }, // Replace with the actual path to the icon
+    {
+      id: 1,
+      name: "MTN",
+      serviceID: "mtn",
+      icon: require("@/assets/icons/mtn.png"),
+    }, // Replace with the actual path to the icon
     {
       id: 2,
+      serviceID: "etisalat",
       name: "9-Mobile",
       icon: require("@/assets/icons/9mobile.jpg"),
     },
-    { id: 3, name: "GLO", icon: require("@/assets/icons/glo.png") },
+    {
+      id: 3,
+      name: "GLO",
+      serviceID: "glo",
+      icon: require("@/assets/icons/glo.png"),
+    },
     {
       id: 4,
       name: "Airtel",
+      serviceID: "airtel",
       icon: require("@/assets/icons/airtel.png"),
     },
   ];
@@ -49,6 +65,46 @@ export default function BuyAirtimeScreen() {
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState();
+
+  const handlePayment = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      const myHeaders = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      setIsLoading(true);
+
+      const data = {
+        amount: parseFloat(amount),
+        phone: phoneNumber,
+        serviceID: selectedOption.serviceID,
+      };
+
+      const response = await axios.post(
+        `${host}/vtpass/purchase-airtime`,
+        data,
+        {
+          headers: myHeaders,
+        }
+      );
+
+      if (response.status == 201) {
+        router.push("/transaction_success");
+      }
+
+      console.log(response.data);
+    } catch (error) {
+      router.push("/transaction_error");
+      console.log(error);
+      console.log(error.response.data);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSelect = (option) => {
     setSelectedOption(option);
@@ -276,6 +332,8 @@ export default function BuyAirtimeScreen() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={bottomSheetType}
+              amount={amount}
+              phoneNumber={phoneNumber}
               snapPoints="40%"
               onClose={() => setIsSavedEnabled(false)}
             />
@@ -293,6 +351,9 @@ export default function BuyAirtimeScreen() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={"schedulePayment"}
+              amount={amount}
+              phoneNumber={phoneNumber}
+              selectedOption={selectedOption}
               handlePress={() => {
                 setIsPayNow(false);
                 setIsEnterPassword(true);
@@ -315,10 +376,8 @@ export default function BuyAirtimeScreen() {
               ref={bottomSheetRef}
               type={"enterPassword"}
               snapPoints="40%"
-              handlePress={() => {
-                setIsEnterPassword(false);
-                navigation.navigate("Success");
-              }}
+              isLoading={isLoading}
+              handlePress={() => handlePayment()}
               onClose={() => setIsEnterPassword(false)}
             />
           </View>
