@@ -23,7 +23,7 @@ import { host } from "@/utils/env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
-export default function BuyAirtimeScreen() {
+export default function DataPurchase() {
   const [bottomSheetType, setBottomSheetType] = useState("saveBeneficiary");
 
   const options = [
@@ -67,8 +67,6 @@ export default function BuyAirtimeScreen() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState();
 
-  const [otp, setOTP] = useState(["", "", "", ""]);
-
   const handlePayment = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -84,7 +82,6 @@ export default function BuyAirtimeScreen() {
         amount: parseFloat(amount),
         phone: phoneNumber,
         serviceID: selectedOption.serviceID,
-        pin: Number(otp.join("")),
       };
 
       const response = await axios.post(
@@ -99,7 +96,7 @@ export default function BuyAirtimeScreen() {
         router.push("/transaction_success");
       }
 
-      // console.log(otp);
+      console.log(response.data);
     } catch (error) {
       router.push("/transaction_error");
       console.log(error);
@@ -378,8 +375,6 @@ export default function BuyAirtimeScreen() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={"enterPassword"}
-              otp={otp}
-              setOTP={setOTP}
               snapPoints="40%"
               isLoading={isLoading}
               handlePress={() => handlePayment()}
@@ -608,7 +603,7 @@ const styles = StyleSheet.create({
     top: -40,
     width: "100%",
     backgroundColor: "#fff",
-    zIndex: 50,
+    zIndex: 10,
     borderRadius: 10,
     // Shadow for iOS
     shadowColor: "#000",

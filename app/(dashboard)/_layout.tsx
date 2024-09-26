@@ -26,6 +26,16 @@ export default function TabsView() {
       <Tabs.Screen name="add_money" options={{ title: "", href: null }} />
       <Tabs.Screen name="transfer" options={{ title: "", href: null }} />
       <Tabs.Screen name="card" options={{ title: "", href: null }} />
+      <Tabs.Screen name="data" options={{ title: "", href: null }} />
+      <Tabs.Screen name="settings/index" options={{ title: "", href: null }} />
+      <Tabs.Screen
+        name="settings/transaction_pin"
+        options={{ title: "", href: null }}
+      />
+      <Tabs.Screen
+        name="settings/account"
+        options={{ title: "", href: null }}
+      />
     </Tabs>
   );
 }

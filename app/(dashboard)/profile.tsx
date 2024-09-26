@@ -93,7 +93,10 @@ export default function profile() {
               <Iconify icon="ci:chevron-right" color="#1e1e1e" size={16} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity className="flex flex-row justify-between mb-4">
+          <TouchableOpacity
+            onPress={() => router.push("/settings")}
+            className="flex flex-row justify-between mb-4"
+          >
             <View className="flex flex-row items-center justify-between">
               <Iconify icon="typcn:cog-outline" color="#1e1e1e" size={20} />
               <Text className="font-aeonik text-lg text-[#253B4B] ml-2">

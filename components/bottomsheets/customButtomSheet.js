@@ -27,17 +27,22 @@ import {
 
 export const CustomBottomSheet = forwardRef((props, ref) => {
   const snapPoints = useMemo(() => [props.snapPoints], []);
-  const [otp, setOTP] = useState(["", "", "", ""]); // Updated to 4 characters
+  // Updated to 4 characters
 
   const handleOTPChange = (value, index) => {
-    const newOTP = [...otp];
+    // Use otp from props or provide a fallback to prevent undefined
+    const newOTP = [...(props.otp || ["", "", "", ""])];
     newOTP[index] = value;
-    setOTP(newOTP);
+
+    props.setOTP(newOTP);
+
+    // Move focus to the next input field if any
     if (value && index < 3) {
       const nextInput = `otp${index + 1}`;
-      this[nextInput].focus();
+      this[nextInput]?.focus(); // Use optional chaining
     }
   };
+
   const renderContent = () => {
     switch (props.type) {
       case "saveBeneficiary":
@@ -314,7 +319,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                   <OTPInput
                     key={index}
                     ref={(input) => (this[`otp${index}`] = input)}
-                    value={otp[index]}
+                    value={props.otp ? props.otp[index] : ""}
                     onChangeText={(value) => handleOTPChange(value, index)}
                     keyboardType="numeric"
                     maxLength={1}

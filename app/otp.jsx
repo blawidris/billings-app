@@ -21,6 +21,7 @@ import {
   sendOTP,
 } from "@/redux/slices/authentication/authSlice";
 import Toast from "react-native-toast-message";
+import { router } from "expo-router";
 
 export default function OTPVerificationScreen({ navigation }) {
   const dispatch = useDispatch();

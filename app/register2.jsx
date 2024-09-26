@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { verifyBVN, setBvnInfo } from "@/redux/slices/bvnSlice/bvnSlice";
 import { setSignUpInfo, signUp } from "@/redux/slices/authentication/authSlice";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignUpTwoScreen() {
   const navigation = useNavigation();
@@ -30,6 +31,8 @@ export default function SignUpTwoScreen() {
   const handleFinish = async () => {
     try {
       console.log("Token before BVN verification:", token);
+
+      AsyncStorage.setItem("token", token);
 
       if (!token) {
         throw new Error("Token is not available");
@@ -48,7 +51,7 @@ export default function SignUpTwoScreen() {
         });
 
         // Navigate to Home page
-        router.push("/home");
+        router.push("/transaction_pin");
       } else {
         setErrorMessage(
           "BVN verification failed. Please check your BVN and try again."

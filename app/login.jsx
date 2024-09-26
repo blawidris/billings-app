@@ -33,7 +33,8 @@ import Support from "@/assets/icons/Support";
 import { login } from "@/redux/slices/authentication/authSlice";
 import Lock from "@/assets/icons/Lock";
 import Toast from "react-native-toast-message";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
+import OrDivider from "@/utils/OrDivider";
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
@@ -122,6 +123,31 @@ export default function LoginScreen() {
 
         </ContinueButton> */}
       </Form>
+      <View
+        styles={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <OrDivider />
+      </View>
+      <SocialButtons>
+        <SocialButton>
+          <Google />
+        </SocialButton>
+        <SocialButton>
+          <Apple />
+        </SocialButton>
+      </SocialButtons>
+      <SignupFooterText>
+        Don't have an account?
+        <Link href="/register" className="text-primary">
+          Register
+        </Link>
+      </SignupFooterText>
+      {/* <Support /> */}
+      <SupportText>Chat with support</SupportText>
     </Container>
   );
 }
