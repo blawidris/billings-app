@@ -321,7 +321,6 @@ export default function BuyAirtimeScreen() {
         >
           <Text style={styles.payButtonText}>Proceed</Text>
         </TouchableOpacity>
-        <View className="h-[70px]"></View>
       </View>
 
       {isSavedEnabled && (
@@ -535,7 +534,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: 48,
-    bottom: 15,
+    bottom: 100,
     left: 20,
   },
   payButtonText: {
@@ -585,6 +584,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
+    backgroundColor: "white",
   },
   optionText: {
     flex: 1,

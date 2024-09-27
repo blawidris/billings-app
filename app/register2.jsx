@@ -82,8 +82,8 @@ export default function SignUpTwoScreen() {
       <Header>
         <HeaderText>Sign Up</HeaderText>
         <SubHeaderText>
-          Kindly provide your BVN / NIN as a CBN requirement before you can have
-          an account on PayBills
+          Kindly provide your BVN as a KYC requirement before you can have an
+          account on PayBills
         </SubHeaderText>
       </Header>
       <Form>
