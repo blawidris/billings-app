@@ -372,7 +372,7 @@ export const Input = styled.TextInput`
   border-color: rgba(196, 196, 196, 1);
   padding: 10px;
   margin-top: 5px;
-  color: "#eeeeee";
+  color: "black";
 `;
 
 export const ContinueButton = styled.TouchableOpacity`
@@ -440,7 +440,7 @@ export const PasswordContainer = styled.View`
 
 export const PasswordInput = styled.TextInput`
   padding: 10px;
-  color: "#eeeeee";
+  color: "black";
 `;
 export const PhoneInputContainer = styled.View`
   flex-direction: row;
