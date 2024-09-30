@@ -323,6 +323,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                     onChangeText={(value) => handleOTPChange(value, index)}
                     keyboardType="numeric"
                     maxLength={1}
+                    returnKeyType="done"
                   />
                 ))}
                 {/* </View> */}

@@ -18,5 +18,5 @@ export default function Index() {
     //setTimeout(checkData, 3000);
   }, []);
 
-  return <Redirect href="/login" />;
+  return <Redirect href="/airtime" />;
 }

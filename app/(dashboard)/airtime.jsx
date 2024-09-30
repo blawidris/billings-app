@@ -164,42 +164,6 @@ export default function BuyAirtimeScreen() {
       </View>
 
       <View style={styles.amountContainer}>
-        {/* <View style={{ marginBottom: 20 }}>
-          <View style={[styles.inputContainer, { marginBottom: 0 }]}>
-            <TouchableOpacity
-              style={styles.selectedOption}
-              onPress={() => setShowDropdown(!showDropdown)}
-            >
-              <Image source={selectedOption.icon} style={styles.icon} />
-              <Text style={styles.selectedText}>{selectedOption.name}</Text>
-              <Image
-                source={require("@/assets/icons/caret-down.png")}
-                style={styles.dropdownArrow}
-              />
-            </TouchableOpacity>
-
-            <TextInput
-              style={styles.phoneInput}
-              className=""
-              placeholder="070 7867 67885"
-              value={phoneNumber}
-              keyboardType="numeric"
-              onChangeText={setPhoneNumber}
-            />
-            <TouchableOpacity
-              onPress={handleUserIconPress}
-              style={[styles.userIcon, { justifyContent: "center" }]}
-            >
-              <Image source={require("@/assets/icons/contact.png")} />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity onPress={handleBeneficiary}>
-            <Text style={{ textAlign: "right", marginTop: 5 }}>
-              Find Beneficiary
-            </Text>
-          </TouchableOpacity>
-        </View> */}
-
         <View className="mb-5">
           <View className="flex flex-row h-12 p-2 border border-gray-400 rounded-lg">
             <TouchableOpacity
@@ -234,43 +198,29 @@ export default function BuyAirtimeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* dropdown: {
-    position: "absolute",
-    top: -40,
-    width: "100%",
-    backgroundColor: "#ffffff",
-    zIndex: 50,
-    borderRadius: 10,
-    // Shadow for iOS
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
-
-    // Shadow for Android
-    elevation: 5,
+        {/* option: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "white",
   }, */}
 
         {/* Dropdown List */}
         {showDropdown && (
-          <View>
+          <View style={{ zIndex: 40 }}>
             <FlatList
               style={{
                 zIndex: 50,
                 borderRadius: 10,
-                // Shadow for iOS
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
               }}
-              className="absolute w-full bg-white"
+              className="absolute w-full bg-white rounded-lg shadow-md"
               //style={styles.dropdown}
               data={options}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.option}
+                  className="flex flex-row items-center p-4 bg-white"
+                  //style={styles.option}
                   onPress={() => handleSelect(item)}
                 >
                   <Image source={item.icon} style={styles.icon} />
