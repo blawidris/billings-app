@@ -607,14 +607,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -40,
     width: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     zIndex: 50,
     borderRadius: 10,
     // Shadow for iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
 
     // Shadow for Android
     elevation: 5,
