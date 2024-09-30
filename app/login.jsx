@@ -115,7 +115,7 @@ export default function LoginScreen() {
           onPress={handleLogin}
         >
           {loginStatus === "loading" ? (
-            <ActivityIndicator size="large" color="white" />
+            <ActivityIndicator size="small" color="white" />
           ) : (
             <ContinueButtonText>Sign In</ContinueButtonText>
           )}

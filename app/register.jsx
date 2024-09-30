@@ -41,6 +41,7 @@ import Support from "@/assets/icons/Support";
 import OrDivider from "@/utils/OrDivider";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
+import { ActivityIndicator } from "react-native";
 
 export default function SignUpOneScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -58,6 +59,7 @@ export default function SignUpOneScreen({ navigation }) {
   const [dob, setDob] = useState(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Input validation functions
   const validateFirstName = (name) => /^[A-Za-z]+$/.test(name);
@@ -85,7 +87,7 @@ export default function SignUpOneScreen({ navigation }) {
     hideDatePicker();
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     // Perform validations
     if (!firstName || !validateFirstName(firstName)) {
       Toast.show({
@@ -168,38 +170,41 @@ export default function SignUpOneScreen({ navigation }) {
         referral: formattedReferralCode,
       })
     );
+    setIsLoading(true);
 
-    // Call the signup API
-    dispatch(
-      signUp({
-        firstName,
-        lastName,
-        email,
-        phone: "+" + callingCode + phone,
-        password,
-        gender,
-        dob: new Date(dob).toISOString(),
-        referral: formattedReferralCode,
-      })
-    )
-      .unwrap()
-      .then(() => {
-        // Show success toast and navigate on successful signup
-        Toast.show({
-          type: "success",
-          text1: "SignUp Successful",
-          text2: "Proceeding to the next step.",
+    try {
+      await dispatch(
+        signUp({
+          firstName,
+          lastName,
+          email,
+          phone: "+" + callingCode + phone,
+          password,
+          gender,
+          dob: new Date(dob).toISOString(),
+          referral: formattedReferralCode,
+        })
+      )
+        .unwrap()
+        .then(() => {
+          // Show success toast and navigate on successful signup
+          Toast.show({
+            type: "success",
+            text1: "SignUp Successful",
+            text2: "Proceeding to the next step.",
+          });
+          router.push("/otp");
         });
-        router.push("/otp");
-      })
-      .catch((error) => {
-        // Show error toast on failed signup
-        Toast.show({
-          type: "error",
-          text1: "SignUp Failed",
-          text2: error.message,
-        });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "SignUp Failed",
+        text2: error.message,
       });
+    } finally {
+      // This will execute regardless of success or failure
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -337,11 +342,18 @@ export default function SignUpOneScreen({ navigation }) {
             value={referral}
             onChangeText={setReferral}
             placeholderTextColor="rgba(196, 196, 196, 1)"
-            className="p-2 h-full border-[0.5px] border-[rgba(196, 196, 196, 1)] flex-1 text-[rgba(196, 196, 196, 1)]"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />
-          <ContinueButton onPress={handleContinue}>
-            <ContinueButtonText>Continue</ContinueButtonText>
-          </ContinueButton>
+          <TouchableOpacity
+            className="flex flex-row items-center justify-center p-5 mt-5 bg-[#1F6CAB] rounded-full"
+            onPress={handleContinue}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <ContinueButtonText>Continue</ContinueButtonText>
+            )}
+          </TouchableOpacity>
         </Form>
         <View
           styles={{

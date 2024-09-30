@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Text, TextInput, ScrollView } from "react-native";
+import { Text, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import Toast from "react-native-toast-message";
 import {
   Container,
@@ -27,9 +27,11 @@ export default function SignUpTwoScreen() {
   const [bvn, setBvn] = useState(bvnState.bvn || "");
   const [username, setUsername] = useState(bvnState.username || "");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFinish = async () => {
     const token = await AsyncStorage.getItem("token");
+    setIsLoading(true);
     try {
       console.log("Token before BVN verification:", token);
 
@@ -79,6 +81,8 @@ export default function SignUpTwoScreen() {
           error.message ||
           "An error occurred during BVN verification. Please try again.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -114,9 +118,16 @@ export default function SignUpTwoScreen() {
             placeholderTextColor="rgba(196, 196, 196, 1)"
             className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />
-          <ContinueButton onPress={handleFinish}>
-            <ContinueButtonText>Continue</ContinueButtonText>
-          </ContinueButton>
+          <TouchableOpacity
+            className="flex flex-row items-center justify-center p-5 mt-5 bg-[#1F6CAB] rounded-full"
+            onPress={handleFinish}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <ContinueButtonText>Continue</ContinueButtonText>
+            )}
+          </TouchableOpacity>
         </Form>
       </ScrollView>
     </Container>

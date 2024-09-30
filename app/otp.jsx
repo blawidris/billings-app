@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, ScrollView, Text, Image } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Text,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
   OTPContainer,
@@ -30,6 +37,7 @@ export default function OTPVerificationScreen({ navigation }) {
   const [otp, setOTP] = useState(["", "", "", ""]); // Updated to 4 characters
   const [timer, setTimer] = useState(59);
   const isOTPSuccessful = useSelector((state) => state.signUp.isOTPSuccessful);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     let interval = null;
@@ -62,31 +70,36 @@ export default function OTPVerificationScreen({ navigation }) {
     }
   };
 
-  const handleSubmitOTP = () => {
+  const handleSubmitOTP = async () => {
     const otpCode = otp.join("");
     console.log("Submitting OTP:", otpCode);
     console.log("Reference:", reference);
 
-    if (otpCode.length === 4) {
-      dispatch(verifyOTP({ code: otpCode, reference }))
-        .unwrap()
-        .then((response) => {
-          console.log("OTP Verification Response:", response); // Debugging log
-        })
-        .catch((error) => {
-          console.error("OTP Verification Error:", error); // Debugging log
-          Toast.show({
-            type: "error",
-            text1: "Verification Failed",
-            text2: "Incorrect verification code or reference",
+    setIsLoading(true);
+
+    try {
+      if (otpCode.length === 4) {
+        await dispatch(verifyOTP({ code: otpCode, reference }))
+          .unwrap()
+          .then((response) => {
+            console.log("OTP Verification Response:", response); // Debugging log
           });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Invalid OTP",
+          text2: "Please enter a valid 4-digit OTP.",
         });
-    } else {
+      }
+    } catch (error) {
+      console.error("OTP Verification Error:", error); // Debugging log
       Toast.show({
         type: "error",
-        text1: "Invalid OTP",
-        text2: "Please enter a valid 4-digit OTP.",
+        text1: "Verification Failed",
+        text2: "Incorrect verification code or reference",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,7 +160,11 @@ export default function OTPVerificationScreen({ navigation }) {
             </Text>
           </TouchableOpacity>
           <SubmitButton onPress={handleSubmitOTP}>
-            <SubmitButtonText>Submit</SubmitButtonText>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="black" />
+            ) : (
+              <SubmitButtonText>Submit</SubmitButtonText>
+            )}
           </SubmitButton>
         </OTPContainer>
         <SupportContainer>
