@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Text } from "react-native";
+import { Text, TextInput, ScrollView } from "react-native";
 import Toast from "react-native-toast-message";
 import {
   Container,
@@ -29,6 +29,7 @@ export default function SignUpTwoScreen() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleFinish = async () => {
+    const token = await AsyncStorage.getItem("token");
     try {
       console.log("Token before BVN verification:", token);
 
@@ -43,7 +44,9 @@ export default function SignUpTwoScreen() {
       const response = await dispatch(verifyBVN({ bvn, username })).unwrap();
       console.log("BVN Verification Response:", response);
 
-      if (response.success) {
+      //console.log(response);
+
+      if (response.statusCode) {
         Toast.show({
           type: "success",
           text1: "Sign Up Successful",
@@ -53,6 +56,7 @@ export default function SignUpTwoScreen() {
         // Navigate to Home page
         router.push("/transaction_pin");
       } else {
+        console.log(error.response);
         setErrorMessage(
           "BVN verification failed. Please check your BVN and try again."
         );
@@ -63,6 +67,7 @@ export default function SignUpTwoScreen() {
         });
       }
     } catch (error) {
+      console.log(error.response);
       setErrorMessage(
         error.message ||
           "An error occurred during BVN verification. Please try again."
@@ -79,33 +84,41 @@ export default function SignUpTwoScreen() {
 
   return (
     <Container>
-      <Header>
-        <HeaderText>Sign Up</HeaderText>
-        <SubHeaderText>
-          Kindly provide your BVN as a KYC requirement before you can have an
-          account on PayBills
-        </SubHeaderText>
-      </Header>
-      <Form>
-        <Input
-          placeholder="Enter BVN"
-          keyboardType="numeric"
-          value={bvn}
-          onChangeText={setBvn}
-          maxLength={11}
-        />
-        {errorMessage ? (
-          <Text style={{ color: "red", marginBottom: 10 }}>{errorMessage}</Text>
-        ) : null}
-        <Input
-          placeholder="Enter username"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <ContinueButton onPress={handleFinish}>
-          <ContinueButtonText>Continue</ContinueButtonText>
-        </ContinueButton>
-      </Form>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Header>
+          <HeaderText>Sign Up</HeaderText>
+          <SubHeaderText>
+            Kindly provide your BVN as a KYC requirement before you can have an
+            account on PayBills
+          </SubHeaderText>
+        </Header>
+        <Form>
+          <TextInput
+            placeholder="Enter BVN"
+            keyboardType="numeric"
+            value={bvn}
+            onChangeText={setBvn}
+            maxLength={11}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
+          />
+          {errorMessage ? (
+            <Text style={{ color: "red", marginBottom: 10 }}>
+              {errorMessage}
+            </Text>
+          ) : null}
+          <TextInput
+            placeholder="Enter username"
+            value={username}
+            onChangeText={setUsername}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
+          />
+          <ContinueButton onPress={handleFinish}>
+            <ContinueButtonText>Continue</ContinueButtonText>
+          </ContinueButton>
+        </Form>
+      </ScrollView>
     </Container>
   );
 }

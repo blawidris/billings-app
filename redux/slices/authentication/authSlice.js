@@ -76,6 +76,8 @@ export const signUp = createAsyncThunk(
       const signUpResponse = await signupApi({ ...userData });
       const token = signUpResponse.data.token;
 
+      await AsyncStorage.setItem("token", token);
+
       // Fetch user details using the token
       const userDataResponse = await getUserData(token);
 

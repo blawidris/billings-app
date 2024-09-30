@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, TouchableOpacity, ScrollView } from "react-native";
+import { View, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CountryPicker from "react-native-country-picker-modal";
 import RNPickerSelect from "react-native-picker-select";
@@ -212,22 +212,27 @@ export default function SignUpOneScreen({ navigation }) {
           </SubHeaderText>
         </Header>
         <Form>
-          <Input
+          <TextInput
             placeholder="First Name"
             value={firstName}
             onChangeText={setFirstName}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />
-          <Input
+          <TextInput
             placeholder="Last Name"
-            className="mt-3"
             value={lastName}
             onChangeText={setLastName}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />
-          <Input
+          <TextInput
             placeholder="Email Address"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />
           <PhoneInputContainer>
             <CountryFlagBox>
@@ -312,12 +317,12 @@ export default function SignUpOneScreen({ navigation }) {
             }}
           >
             <Lock />
-            <PasswordInput
-              style={{ flex: 1, height: "100%", textAlignVertical: "center" }}
+            <TextInput
               placeholder="Enter Password"
-              secureTextEntry={!isPasswordVisible}
               value={password}
               onChangeText={setPassword}
+              secureTextEntry={!isPasswordVisible}
+              className="p-2 h-full border-[rgba(196, 196, 196, 1)] flex-1 text-[rgba(196, 196, 196, 1)]"
             />
             <FontAwesome
               name={isPasswordVisible ? "eye-slash" : "eye"}
@@ -327,10 +332,12 @@ export default function SignUpOneScreen({ navigation }) {
               style={{ marginLeft: 10 }}
             />
           </View>
-          <Input
+          <TextInput
             placeholder="Referral Code (Optional)"
             value={referral}
             onChangeText={setReferral}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-[rgba(196, 196, 196, 1)] flex-1 text-[rgba(196, 196, 196, 1)]"
           />
           <ContinueButton onPress={handleContinue}>
             <ContinueButtonText>Continue</ContinueButtonText>

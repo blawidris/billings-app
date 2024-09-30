@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   Image,
+  TextInput,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -14,7 +15,6 @@ import {
   HeaderText,
   SubHeaderText,
   Form,
-  Input,
   ContinueButton,
   ContinueButtonText,
   SocialButtons,
@@ -26,6 +26,7 @@ import {
   LinkText,
   PasswordInput,
 } from "../components/account.styles";
+import { Input } from "../components/common.styles";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Apple from "@/assets/icons/Apple";
 import Google from "@/assets/icons/Google";
@@ -73,12 +74,15 @@ export default function LoginScreen() {
       </Header>
       <Form>
         {errorMessage ? <Text>{errorMessage}</Text> : null}
-        <Input
+        <TextInput
           placeholder="Email Address"
           value={email}
           onChangeText={setEmail}
+          placeholderTextColor="rgba(196, 196, 196, 1)"
           keyboardType="email-address"
+          className="h-12 rounded-md border-[0.5px] p-2 mt-1 border-gray-400 text-[rgba(196, 196, 196, 1)]"
         />
+
         <View
           className="flex flex-row items-center mt-3"
           style={{
@@ -90,12 +94,13 @@ export default function LoginScreen() {
           }}
         >
           <Lock />
-          <PasswordInput
-            style={{ flex: 1, height: "100%" }}
+          <TextInput
             placeholder="Enter Password"
             value={password}
             onChangeText={setPassword}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
             secureTextEntry={!isPasswordVisible}
+            className="p-2 h-full flex-1 text-[rgba(196, 196, 196, 1)]"
           />
           <FontAwesome
             name={isPasswordVisible ? "eye-slash" : "eye"}
