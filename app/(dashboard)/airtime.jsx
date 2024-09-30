@@ -96,7 +96,9 @@ export default function BuyAirtimeScreen() {
       );
 
       if (response.status == 201) {
+
         router.push("/transaction_success");
+
       }
 
       // console.log(otp);
@@ -105,6 +107,7 @@ export default function BuyAirtimeScreen() {
       console.log(error);
       console.log(error.response.data);
     } finally {
+      setIsEnterPassword(false)
       setIsLoading(false);
     }
   };
