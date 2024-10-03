@@ -6,17 +6,23 @@ import { Text, View } from "react-native";
 export default function Index() {
   const checkData = async () => {
     const token = await AsyncStorage.getItem("token");
+    const firstLaunch = await AsyncStorage.getItem("firstLaunch");
 
-    if (!token) {
-      router.push("/login");
+    if (!firstLaunch) {
+      await AsyncStorage.setItem("firstLaunch", "true");
+      router.push("/onboarding");
     } else {
-      router.push("/home");
+      if (!token) {
+        router.push("/login");
+      } else {
+        router.push("/home");
+      }
     }
   };
 
   useEffect(() => {
-    //setTimeout(checkData, 3000);
+    setTimeout(checkData, 3000);
   }, []);
 
-  return <Redirect href="/transaction_pin" />;
+  return <Redirect href="/splashscreen" />;
 }
