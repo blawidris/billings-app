@@ -15,8 +15,8 @@ export default function Index() {
   };
 
   useEffect(() => {
-    //setTimeout(checkData, 3000);
+    setTimeout(checkData, 3000);
   }, []);
 
-  return <Redirect href="/airtime" />;
+  return <Redirect href="/splashscreen" />;
 }
