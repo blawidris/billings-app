@@ -144,7 +144,7 @@ export default function profile() {
                   color: "rgba(144, 144, 144, 1)",
                 }}
               >
-                Ensure you re-enter your PIN correctly to complete the setup
+                Ensure you enter your PIN correctly to complete the setup
               </Text>
 
               {/* <View style={{gap: 15}}> */}

@@ -67,7 +67,7 @@ export default function LoginScreen() {
   return (
     <Container>
       <Header>
-        <HeaderText>Log In</HeaderText>
+        <HeaderText>Login</HeaderText>
         <SubHeaderText>
           Fill the details below to login to your account
         </SubHeaderText>
@@ -117,7 +117,7 @@ export default function LoginScreen() {
           {loginStatus === "loading" ? (
             <ActivityIndicator size="small" color="white" />
           ) : (
-            <ContinueButtonText>Sign In</ContinueButtonText>
+            <ContinueButtonText>Login</ContinueButtonText>
           )}
         </TouchableOpacity>
 
@@ -148,7 +148,7 @@ export default function LoginScreen() {
       <SignupFooterText>
         Don't have an account?
         <Link href="/register" className="text-primary">
-          Register
+          Sign up
         </Link>
       </SignupFooterText>
       {/* <Support /> */}
