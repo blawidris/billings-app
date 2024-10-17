@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, TouchableOpacity, TextInput, ScrollView } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  Image,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CountryPicker from "react-native-country-picker-modal";
 import RNPickerSelect from "react-native-picker-select";
@@ -378,6 +384,10 @@ export default function SignUpOneScreen({ navigation }) {
         {/* <Support /> */}
         <SupportText>Chat with support</SupportText>
       </ScrollView>
+      <Image
+        source={require("@/assets/pattern.png")}
+        className="absolute bottom-0"
+      />
     </Container>
   );
 }

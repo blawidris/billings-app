@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Text, TextInput, ScrollView, ActivityIndicator } from "react-native";
+import {
+  Text,
+  TextInput,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import Toast from "react-native-toast-message";
 import {
   Container,
@@ -130,6 +137,10 @@ export default function SignUpTwoScreen() {
           </TouchableOpacity>
         </Form>
       </ScrollView>
+      <Image
+        source={require("@/assets/pattern.png")}
+        className="absolute bottom-0"
+      />
     </Container>
   );
 }

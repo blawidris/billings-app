@@ -153,6 +153,10 @@ export default function LoginScreen() {
       </SignupFooterText>
       {/* <Support /> */}
       <SupportText>Chat with support</SupportText>
+      <Image
+        source={require("@/assets/pattern.png")}
+        className="absolute bottom-0"
+      />
     </Container>
   );
 }

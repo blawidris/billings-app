@@ -12,6 +12,7 @@ import {
 } from "../components/account.styles";
 import Support from "@/assets/icons/Support";
 import { router } from "expo-router";
+import { Image } from "react-native";
 
 export default function WelcomeScreen() {
   const navigation = useNavigation();
@@ -30,6 +31,11 @@ export default function WelcomeScreen() {
       <SupportContainer>
         <Support />
       </SupportContainer>
+      <Image
+        style={{ zIndex: 20 }}
+        source={require("@/assets/pattern.png")}
+        className="absolute bottom-0"
+      />
     </WelcomeBackground>
   );
 }

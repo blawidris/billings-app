@@ -21,8 +21,8 @@ export default function Index() {
   };
 
   useEffect(() => {
-    setTimeout(checkData, 3000);
+    //setTimeout(checkData, 3000);
   }, []);
 
-  return <Redirect href="/splashscreen" />;
+  return <Redirect href="/welcome" />;
 }
