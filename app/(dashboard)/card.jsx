@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Clipboard,
+  ToastAndroid,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { host } from "@/utils/env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 export default function CardScreen({ navigation }) {
   const username = useSelector((state) => state.bvn.username);
@@ -16,8 +21,37 @@ export default function CardScreen({ navigation }) {
   const lastName = useSelector((state) => state.signUp.lastName);
   const copyToClipboard = (text) => {
     Clipboard.setString(text);
-    alert("Account number copied to clipboard!");
+    //alert("Account number copied to clipboard!");
+    ToastAndroid.show(
+      "Account number copied to clipboard!",
+      ToastAndroid.SHORT
+    );
   };
+
+  const getCardDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      console.log("Loading");
+
+      const myHeaders = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await axios.get(`${host}/user/me`, {
+        headers: myHeaders,
+      });
+
+      console.log("Virtual Account", response.data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  useEffect(() => {
+    getCardDetails();
+  }, []);
 
   return (
     <View style={styles.container}>

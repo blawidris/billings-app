@@ -167,7 +167,10 @@ export default function home() {
             <Phone width={50} height={50} />
             <Text className="font-aeonik">Airtime</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex items-center justify-center p-3 border border-gray-400 rounded-md">
+          <TouchableOpacity
+            onPress={() => router.push("/data")}
+            className="flex items-center justify-center p-3 border border-gray-400 rounded-md"
+          >
             <Wifi width={50} height={50} />
             <Text className="font-aeonik">Data</Text>
           </TouchableOpacity>

@@ -86,6 +86,7 @@ export const signUp = createAsyncThunk(
 
       return { ...signUpResponse, userData: userDataResponse };
     } catch (error) {
+      console.log(error);
       return rejectWithValue(error.response.data);
     }
   }

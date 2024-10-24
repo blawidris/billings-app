@@ -24,5 +24,5 @@ export default function Index() {
     //setTimeout(checkData, 3000);
   }, []);
 
-  return <Redirect href="/welcome" />;
+  return <Redirect href="/home" />;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -66,6 +66,42 @@ export default function DataPurchase() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState();
+  const [selectedBundle, setSelectedBundle] = useState(null);
+  const [showBundleDropdown, setShowBundleDropdown] = useState(false);
+
+  const bundles = [
+    { id: 1, name: "1GB - ₦500" },
+    { id: 2, name: "2GB - ₦1000" },
+    { id: 3, name: "5GB - ₦2000" },
+    { id: 4, name: "10GB - ₦3500" },
+  ];
+
+  const getDataVariations = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      const myHeaders = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      setIsLoading(true);
+
+      const response = await axios.get(
+        `${host}/vtpass/variations?data=data'`,
+
+        {
+          headers: myHeaders,
+        }
+      );
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error.response);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePayment = async () => {
     try {
@@ -148,6 +184,10 @@ export default function DataPurchase() {
     }
   };
 
+  useEffect(() => {
+    getDataVariations();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -157,7 +197,7 @@ export default function DataPurchase() {
         >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Airtime</Text>
+        <Text style={styles.headerTitle}>Data</Text>
       </View>
 
       <View style={styles.amountContainer}>
@@ -221,36 +261,42 @@ export default function DataPurchase() {
             />
           </View>
         )}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter amount"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
-          <View style={styles.currency}>
-            <Text style={styles.currencyText}>NGN</Text>
-          </View>
-        </View>
 
-        <Text style={styles.selectAmountText}>Select amount</Text>
-        <FlatList
-          data={predefinedAmounts}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.amountButton}
-              onPress={() => setAmount(item.toString())}
-            >
-              <Text style={styles.amountText}>₦{item.toFixed(2)}</Text>
-            </TouchableOpacity>
+        {/* Bundle Selection */}
+        <View style={{ marginBottom: 20 }}>
+          <TouchableOpacity
+            style={[styles.inputContainer, styles.bundleSelector]}
+            onPress={() => setShowBundleDropdown(!showBundleDropdown)}
+          >
+            <Text style={styles.selectedText}>
+              {selectedBundle ? selectedBundle.name : "Choose Bundle"}
+            </Text>
+            <Ionicons
+              name={showBundleDropdown ? "chevron-up" : "chevron-down"}
+              size={20}
+              color="rgba(31, 108, 171, 1)"
+            />
+          </TouchableOpacity>
+
+          {showBundleDropdown && (
+            <FlatList
+              style={styles.dropdown}
+              data={bundles}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={() => {
+                    setSelectedBundle(item);
+                    setShowBundleDropdown(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+            />
           )}
-          contentContainerStyle={styles.predefinedAmounts}
-          style={styles.scrollContainer}
-        />
+        </View>
 
         <View style={styles.schedulePayment}>
           <Text style={styles.paymentText}>Save Benefiaciary</Text>
@@ -616,5 +662,25 @@ const styles = StyleSheet.create({
   },
   userIcon: {
     paddingLeft: 120,
+  },
+  bundleSelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    position: "relative",
+    backgroundColor: "#fff",
+  },
+
+  option: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+
+  optionText: {
+    fontSize: 16,
+    color: "#333",
   },
 });

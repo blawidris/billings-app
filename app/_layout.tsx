@@ -12,8 +12,17 @@ import { Provider } from "react-redux";
 import store from "@/redux/store";
 import { ThemeProvider } from "styled-components/native";
 import { theme } from "@/infrastructure/theme";
+import { WEB_KEYS } from "@/keys";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export default function RootLayout() {
+  GoogleSignin.configure({
+    webClientId: WEB_KEYS.WEB_KEYS,
+    scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+    offlineAccess: true,
+    forceCodeForRefreshToken: true,
+    iosClientId: WEB_KEYS.IOS_KEYS,
+  });
   const toastConfig = {
     success: (props: ToastConfigParams<any>) => (
       <BaseToast

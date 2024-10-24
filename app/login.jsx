@@ -36,6 +36,13 @@ import Lock from "@/assets/icons/Lock";
 import Toast from "react-native-toast-message";
 import { Link, router } from "expo-router";
 import OrDivider from "@/utils/OrDivider";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+  isSuccessResponse,
+  isErrorWithCode,
+} from "@react-native-google-signin/google-signin";
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
@@ -55,12 +62,41 @@ export default function LoginScreen() {
     } else {
       const errorMsg =
         resultAction.payload || "Failed to login. Please try again.";
+      console.log(errorMsg);
       Toast.show({
         type: "error",
         text1: "Login Failed",
         text2: errorMsg.message,
         position: "top",
       });
+    }
+  };
+
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      if (isSuccessResponse(response)) {
+        console.log({ userInfo: response.data });
+      } else {
+        // sign in was cancelled by user
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        console.log(error);
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            // operation (eg. sign in) already in progress
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            // Android only, play services not available or outdated
+            break;
+          default:
+          // some other error happened
+        }
+      } else {
+        // an error that's not related to google sign in occurred
+      }
     }
   };
 
@@ -138,7 +174,7 @@ export default function LoginScreen() {
         <OrDivider />
       </View>
       <SocialButtons>
-        <SocialButton>
+        <SocialButton onPress={signIn}>
           <Google />
         </SocialButton>
         <SocialButton>

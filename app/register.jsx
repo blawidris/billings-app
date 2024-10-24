@@ -202,6 +202,7 @@ export default function SignUpOneScreen({ navigation }) {
           router.push("/otp");
         });
     } catch (error) {
+      console.log(error)
       Toast.show({
         type: "error",
         text1: "SignUp Failed",
