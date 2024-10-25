@@ -43,6 +43,8 @@ import {
   isSuccessResponse,
   isErrorWithCode,
 } from "@react-native-google-signin/google-signin";
+import { Iconify } from "react-native-iconify";
+import * as LocalAuthentication from "expo-local-authentication";
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
@@ -70,6 +72,12 @@ export default function LoginScreen() {
         position: "top",
       });
     }
+  };
+
+  const fingerPrintLogin = async () => {
+    try {
+      LocalAuthentication.authenticateAsync();
+    } catch (error) {}
   };
 
   const signIn = async () => {
@@ -146,6 +154,12 @@ export default function LoginScreen() {
             style={{ marginLeft: 10 }}
           />
         </View>
+        <View className="flex items-end p-2">
+          <Link href="/forgot-password" className="text-primary">
+            Forgot Password?
+          </Link>
+        </View>
+
         <TouchableOpacity
           className="flex flex-row items-center justify-center p-5 mt-5 bg-[#1F6CAB] rounded-full"
           onPress={handleLogin}
@@ -156,14 +170,16 @@ export default function LoginScreen() {
             <ContinueButtonText>Login</ContinueButtonText>
           )}
         </TouchableOpacity>
-
-        {/* <ContinueButton
-          className="flex flex-row items-center p-3 rounded-full"
-          onPress={handleLogin}
-        >
-
-        </ContinueButton> */}
       </Form>
+      <View className="flex items-center p-4 mt-4">
+        <TouchableOpacity
+          onPress={fingerPrintLogin}
+          className="flex flex-row gap-2"
+        >
+          <Iconify icon="ri:fingerprint-fill" size={20} color="#1F6CAB" />
+          <Text>Sign in with Biometrics</Text>
+        </TouchableOpacity>
+      </View>
       <View
         styles={{
           flex: 1,

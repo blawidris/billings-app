@@ -24,5 +24,5 @@ export default function Index() {
     //setTimeout(checkData, 3000);
   }, []);
 
-  return <Redirect href="/home" />;
+  return <Redirect href="/forgot-password/reset-password" />;
 }
