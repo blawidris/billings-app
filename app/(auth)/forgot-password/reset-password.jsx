@@ -105,10 +105,8 @@ export default function SignUpTwoScreen() {
         <Form>
           <TextInput
             placeholder="Enter Password"
-            keyboardType="numeric"
             value={bvn}
             onChangeText={setBvn}
-            maxLength={11}
             placeholderTextColor="rgba(196, 196, 196, 1)"
             className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />

@@ -9,10 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yawdah.paybill",
-      "runtimeVersion": {
-        "policy": "appVersion"
-      }
+      "bundleIdentifier": "com.yawdah.paybill"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,8 +20,7 @@
       "permissions": [
         "android.permission.USE_BIOMETRIC",
         "android.permission.USE_FINGERPRINT"
-      ],
-      "runtimeVersion": "1.0.0"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -59,6 +55,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/852a94b8-0a33-43a7-a36a-42c33794489a"
-    }
+    },
+    "runtimeVersion": "1.0.0"
   }
 }
