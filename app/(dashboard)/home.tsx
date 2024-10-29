@@ -10,6 +10,7 @@ import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Clipboard from "expo-clipboard";
 
 export default function home() {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ export default function home() {
   const [wallet, setWallet] = useState();
   const firstName = useSelector((state: any) => state.signUp.firstName);
   const lastName = useSelector((state: any) => state.signUp.lastName);
+  const [virtualAccount, setVirtualAccount] = useState("");
 
   useEffect(() => {
     const getInfo = async () => {
@@ -36,6 +38,10 @@ export default function home() {
     //   console.log("User found:", user);
     // }
   }, []);
+
+  const copyToClipboard = async (text) => {
+    await Clipboard.setStringAsync(text);
+  };
 
   //console.log("User in Component:", username);
   return (
@@ -75,7 +81,7 @@ export default function home() {
               ₦{wallet?.balance}
             </Text>
             <View className="flex flex-row mt-3">
-              <View
+              <TouchableOpacity
                 style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
                 className="flex flex-row items-center p-2 mr-1 rounded-full"
               >
@@ -86,19 +92,23 @@ export default function home() {
                   source={require("@/assets/images/clipboard.png")}
                   className="w-[10px] ml-1 h-[10px] "
                 />
-              </View>
-              <View
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  copyToClipboard(wallet?.virtualAccount?.accountNumber)
+                }
                 style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}
                 className="flex flex-row items-center p-2 mr-1 rounded-full"
               >
                 <Text className="mr-1 text-sm text-white font-aeonik">
-                  WEMA: 1022775588
+                  {wallet?.virtualAccount?.accountNumber}:
+                  {wallet?.virtualAccount?.accountNumber}
                 </Text>
                 <Image
                   source={require("@/assets/images/clipboard.png")}
                   className="w-[10px] ml-1 h-[10px] "
                 />
-              </View>
+              </TouchableOpacity>
             </View>
             <View className="flex flex-row gap-4 mt-5">
               <View className="items-center gap-2">

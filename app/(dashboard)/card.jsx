@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,10 +13,14 @@ import axios from "axios";
 import { host } from "@/utils/env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { isNewBackTitleImplementation } from "react-native-screens";
+import { UserData } from "@/@types/index.ts";
+import { getUserData } from "@/services/api";
 
 export default function CardScreen({ navigation }) {
   const username = useSelector((state) => state.bvn.username);
   const user = useSelector((state) => state.signUp.user);
+
   const firstName = useSelector((state) => state.signUp.firstName);
   const lastName = useSelector((state) => state.signUp.lastName);
   const copyToClipboard = (text) => {
@@ -28,29 +32,18 @@ export default function CardScreen({ navigation }) {
     );
   };
 
-  const getCardDetails = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-
-      console.log("Loading");
-
-      const myHeaders = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-
-      const response = await axios.get(`${host}/user/me`, {
-        headers: myHeaders,
-      });
-
-      console.log("Virtual Account", response.data);
-    } catch (error) {
-      console.log(error.response);
-    }
-  };
+  const [userInfo, setUserInfo] = useState();
+  const [wallet, setWallet] = useState();
 
   useEffect(() => {
-    getCardDetails();
+    const getInfo = async () => {
+      const token = await AsyncStorage.getItem("token");
+      const userDataResponse = await getUserData(token);
+      setUserInfo(userDataResponse.user);
+      setWallet(userDataResponse.wallet);
+      console.log("rrr", userDataResponse);
+    };
+    getInfo();
   }, []);
 
   return (
@@ -58,7 +51,7 @@ export default function CardScreen({ navigation }) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -67,26 +60,34 @@ export default function CardScreen({ navigation }) {
       </View>
 
       {/* Virtual Account Card */}
-      <View style={styles.cardContainer}>
-        <View style={styles.card}>
-          <Text style={styles.bankName}>WEMA BANK</Text>
-          <View style={styles.cardRow}>
-            <Text style={styles.accountNumber}>10223446677</Text>
-            <TouchableOpacity
-              onPress={() => copyToClipboard("10223446677")}
-              style={styles.copyButton}
-            >
-              <Ionicons name="copy-outline" size={16} color="#fff" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.cardsRow}>
-            <Text style={styles.accountHolder}>
-              {firstName} {lastName}
+      {wallet?.virtualAccount && (
+        <View style={styles.cardContainer}>
+          <View style={styles.card}>
+            <Text className="text-base text-white">
+              {wallet.virtualAccount.bankName || wallet || "N/A"}
             </Text>
-            <Text style={styles.virtualAccount}>Virtual account</Text>
+            <View style={styles.cardRow}>
+              <Text style={styles.accountNumber}>
+                {wallet.virtualAccount?.accountNumber || "N/A"}
+              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  copyToClipboard(userInfo?.virtualAccount?.accountNumber)
+                }
+                style={styles.copyButton}
+              >
+                <Ionicons name="copy-outline" size={16} color="#fff" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.cardsRow}>
+              <Text style={styles.accountHolder}>
+                {wallet.virtualAccount?.accountName || "N/A"}
+              </Text>
+              <Text style={styles.virtualAccount}>Virtual account</Text>
+            </View>
           </View>
         </View>
-      </View>
+      )}
 
       {/* Info Text */}
       <View style={styles.infoContainer}>
