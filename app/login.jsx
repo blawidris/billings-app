@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -7,6 +7,8 @@ import {
   Text,
   Image,
   TextInput,
+  BackHandler,
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -107,6 +109,27 @@ export default function LoginScreen() {
       }
     }
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }, // Adjust the navigation target
+      ]);
+      return true; // Prevent default back action
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [router]);
 
   return (
     <Container>

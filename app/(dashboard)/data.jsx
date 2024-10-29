@@ -52,6 +52,30 @@ export default function DataPurchase() {
       icon: require("@/assets/icons/airtel.png"),
     },
   ];
+
+  const getOperators = async () => {
+    const url =
+      "https://paybillsbackend.onrender.com/vtpass/operators?data=data";
+
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      console.log(data);
+
+      // Assuming the data you need is directly in the response body
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch operators:", error.message);
+      return null; // or you could handle errors differently based on your needs
+    }
+  };
+
   const [amount, setAmount] = useState("");
   const predefinedAmounts = [100, 500, 1000, 2000, 3000];
   const [isScheduledEnabled, setIsScheduledEnabled] = useState(false);
@@ -186,6 +210,7 @@ export default function DataPurchase() {
 
   useEffect(() => {
     getDataVariations();
+    getOperators();
   }, []);
 
   return (
