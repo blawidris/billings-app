@@ -22,59 +22,12 @@ import axios from "axios";
 import { host } from "@/utils/env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import Toast from "react-native-toast-message";
 
 export default function DataPurchase() {
   const [bottomSheetType, setBottomSheetType] = useState("saveBeneficiary");
 
-  const options = [
-    {
-      id: 1,
-      name: "MTN",
-      serviceID: "mtn",
-      icon: require("@/assets/icons/mtn.png"),
-    }, // Replace with the actual path to the icon
-    {
-      id: 2,
-      serviceID: "etisalat",
-      name: "9-Mobile",
-      icon: require("@/assets/icons/9mobile.jpg"),
-    },
-    {
-      id: 3,
-      name: "GLO",
-      serviceID: "glo",
-      icon: require("@/assets/icons/glo.png"),
-    },
-    {
-      id: 4,
-      name: "Airtel",
-      serviceID: "airtel",
-      icon: require("@/assets/icons/airtel.png"),
-    },
-  ];
-
-  const getOperators = async () => {
-    const url =
-      "https://paybillsbackend.onrender.com/vtpass/operators?data=data";
-
-    try {
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      console.log(data);
-
-      // Assuming the data you need is directly in the response body
-      return data;
-    } catch (error) {
-      console.error("Failed to fetch operators:", error.message);
-      return null; // or you could handle errors differently based on your needs
-    }
-  };
+  const [options, setOptions] = useState([]);
 
   const [amount, setAmount] = useState("");
   const predefinedAmounts = [100, 500, 1000, 2000, 3000];
@@ -93,14 +46,22 @@ export default function DataPurchase() {
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [showBundleDropdown, setShowBundleDropdown] = useState(false);
 
-  const bundles = [
-    { id: 1, name: "1GB - ₦500" },
-    { id: 2, name: "2GB - ₦1000" },
-    { id: 3, name: "5GB - ₦2000" },
-    { id: 4, name: "10GB - ₦3500" },
-  ];
+  const [bundles, setBundle] = useState([]);
+  const [otp, setOTP] = useState(["", "", "", ""]);
 
-  const getDataVariations = async () => {
+  const getOperators = async () => {
+    try {
+      const response = await axios.get(`${host}/vtpass/operators?data=data`);
+
+      // console.log(response.data);
+      setOptions(response.data.data);
+    } catch (error) {
+      console.log(error.data);
+      Toast.show({ type: "error", text1: "An occurred getting operators" });
+    }
+  };
+
+  const getDataVariations = async (serviceID) => {
     try {
       const token = await AsyncStorage.getItem("token");
 
@@ -112,14 +73,15 @@ export default function DataPurchase() {
       setIsLoading(true);
 
       const response = await axios.get(
-        `${host}/vtpass/variations?data=data'`,
+        `${host}/vtpass/variations?data=${serviceID}`,
 
         {
           headers: myHeaders,
         }
       );
 
-      console.log(response.data);
+      //console.log(response.data.data.varations[0]);
+      setBundle(response.data.data.varations);
     } catch (error) {
       console.log(error.response);
     } finally {
@@ -139,36 +101,39 @@ export default function DataPurchase() {
       setIsLoading(true);
 
       const data = {
-        amount: parseFloat(amount),
+        amount: parseFloat(selectedBundle.variation_amount) ?? 0,
+        variation_code: selectedBundle.variation_code,
         phone: phoneNumber,
         serviceID: selectedOption.serviceID,
+        pin: Number(otp.join("")),
+        billersCode: phoneNumber,
       };
 
-      const response = await axios.post(
-        `${host}/vtpass/purchase-airtime`,
-        data,
-        {
-          headers: myHeaders,
-        }
-      );
+      console.log(data);
+
+      const response = await axios.post(`${host}/vtpass/purchase-data`, data, {
+        headers: myHeaders,
+      });
 
       if (response.status == 201) {
-        router.push("/transaction_success");
+        router.push("/data_success");
       }
 
       console.log(response.data);
     } catch (error) {
-      router.push("/transaction_error");
-      console.log(error);
+      router.push("/data_error");
+      console.log(error.response);
       console.log(error.response.data);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSelect = (option) => {
+  const handleSelect = async (option) => {
     setSelectedOption(option);
     setShowDropdown(false);
+
+    await getDataVariations(option.serviceID);
   };
   const handleBeneficiary = () => {
     //navigation.navigate("Beneficiary");
@@ -209,7 +174,7 @@ export default function DataPurchase() {
   };
 
   useEffect(() => {
-    getDataVariations();
+    //getDataVariations();
     getOperators();
   }, []);
 
@@ -232,8 +197,18 @@ export default function DataPurchase() {
               style={styles.selectedOption}
               onPress={() => setShowDropdown(!showDropdown)}
             >
-              <Image source={selectedOption.icon} style={styles.icon} />
-              <Text style={styles.selectedText}>{selectedOption.name}</Text>
+              {selectedOption?.image ? (
+                <Image
+                  source={{ uri: selectedOption.image }}
+                  style={styles.icon}
+                />
+              ) : (
+                <Image
+                  source={require("@/assets/airtel.png")}
+                  style={styles.icon}
+                />
+              )}
+              <Text style={styles.selectedText}>{selectedOption?.name}</Text>
               <Image
                 source={require("@/assets/icons/caret-down.png")}
                 style={styles.dropdownArrow}
@@ -268,15 +243,24 @@ export default function DataPurchase() {
             <FlatList
               style={styles.dropdown}
               data={options}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item) => item.serviceID}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.option}
+                  className="flex flex-row items-center justify-between p-4"
                   onPress={() => handleSelect(item)}
                 >
-                  <Image source={item.icon} style={styles.icon} />
-                  <Text style={styles.optionText}>{item.name}</Text>
-                  {item.id === selectedOption.id ? (
+                  <View className="flex flex-row items-center space-x-4">
+                    {item?.image ? (
+                      <Image source={{ uri: item.image }} style={styles.icon} />
+                    ) : (
+                      <Image
+                        source={require("@/assets/airtel.png")}
+                        style={styles.icon}
+                      />
+                    )}
+                    <Text style={styles.optionText}>{item.name}</Text>
+                  </View>
+                  {item?.serviceID === selectedOption?.serviceID ? (
                     <View style={styles.radioUnselected} />
                   ) : (
                     <View style={styles.radioUnselected} />
@@ -307,7 +291,7 @@ export default function DataPurchase() {
             <FlatList
               style={styles.dropdown}
               data={bundles}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item) => item.name}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.option}
@@ -422,9 +406,10 @@ export default function DataPurchase() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={"schedulePayment"}
-              amount={amount}
+              amount={selectedBundle.variation_amount}
               phoneNumber={phoneNumber}
               selectedOption={selectedOption}
+              sub={"Data"}
               handlePress={() => {
                 setIsPayNow(false);
                 setIsEnterPassword(true);
@@ -446,6 +431,8 @@ export default function DataPurchase() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={"enterPassword"}
+              otp={otp}
+              setOTP={setOTP}
               snapPoints="40%"
               isLoading={isLoading}
               handlePress={() => handlePayment()}
@@ -601,7 +588,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: 48,
-    bottom: 15,
+    bottom: 80,
     left: 20,
   },
   payButtonText: {

@@ -27,7 +27,8 @@ const useBackPressHandler = (paths: string[]) => {
         backAction
       );
 
-      return () => backHandler.remove();
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", backAction);
     }
   }, [pathname, paths]);
 };

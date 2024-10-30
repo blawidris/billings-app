@@ -133,7 +133,7 @@ export const CustomBottomSheet = forwardRef((props, ref) => {
                   />
                   <View>
                     <Text style={{ fontFamily: "Aeonik TRIAL", fontSize: 14 }}>
-                      Airtime Recharge
+                      {props.sub} Recharge
                     </Text>
                     <Text
                       style={{

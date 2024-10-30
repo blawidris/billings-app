@@ -96,9 +96,7 @@ export default function BuyAirtimeScreen() {
       );
 
       if (response.status == 201) {
-
         router.push("/transaction_success");
-
       }
 
       // console.log(otp);
@@ -107,7 +105,7 @@ export default function BuyAirtimeScreen() {
       console.log(error);
       console.log(error.response.data);
     } finally {
-      setIsEnterPassword(false)
+      setIsEnterPassword(false);
       setIsLoading(false);
     }
   };
@@ -200,13 +198,6 @@ export default function BuyAirtimeScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* option: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    backgroundColor: "white",
-  }, */}
 
         {/* Dropdown List */}
         {showDropdown && (
@@ -350,6 +341,7 @@ export default function BuyAirtimeScreen() {
               type={bottomSheetType}
               amount={amount}
               phoneNumber={phoneNumber}
+              sub={"Data"}
               snapPoints="40%"
               onClose={() => setIsSavedEnabled(false)}
             />
@@ -368,6 +360,7 @@ export default function BuyAirtimeScreen() {
               ref={bottomSheetRef}
               type={"schedulePayment"}
               amount={amount}
+              sub={"Airtime"}
               phoneNumber={phoneNumber}
               selectedOption={selectedOption}
               handlePress={() => {
