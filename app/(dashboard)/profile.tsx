@@ -1,10 +1,42 @@
 import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Iconify } from "react-native-iconify";
 import { router } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserData } from "@/services/api";
+import useBackPressHandler from "@/hooks/useBackHandler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function profile() {
+  const dispatch = useDispatch();
+  const username = useSelector((state: any) => state.bvn.username);
+  const [user, setUser] = useState();
+  const [wallet, setWallet] = useState();
+  const firstName = useSelector((state: any) => state.signUp.firstName);
+  const lastName = useSelector((state: any) => state.signUp.lastName);
+  const [virtualAccount, setVirtualAccount] = useState("");
+
+  useBackPressHandler(["/login", "/home"]);
+
+  useEffect(() => {
+    const getInfo = async () => {
+      const token = await AsyncStorage.getItem("token");
+      const userDataResponse = await getUserData(token);
+      setUser(userDataResponse.user);
+      setWallet(userDataResponse.wallet);
+      console.log(userDataResponse);
+      console.log(userDataResponse.wallet);
+    };
+
+    getInfo();
+    // if (!user) {
+    //   console.log("No user found");
+    // } else {
+    //   console.log("User found:", user);
+    // }
+  }, []);
+
   const logOut = async () => {
     try {
       Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -45,7 +77,7 @@ export default function profile() {
               />
             </View>
             <Text className="text-sm text-white font-aeonik-bold">
-              Arome Moses Yahaya
+              {user?.firstName} {user?.lastName}
             </Text>
             <View className="flex flex-row mt-2">
               <View
@@ -53,7 +85,7 @@ export default function profile() {
                 className="flex flex-row items-center p-2 mr-1 rounded-full"
               >
                 <Text className="mr-1 text-sm text-white font-aeonik">
-                  PB ID: @st_emmanuel
+                  PB ID: {username}
                 </Text>
                 <Image
                   source={require("@/assets/images/clipboard.png")}
@@ -65,7 +97,8 @@ export default function profile() {
                 className="flex flex-row items-center p-2 mr-1 rounded-full"
               >
                 <Text className="mr-1 text-sm text-white font-aeonik">
-                  WEMA: 1022775588
+                  {wallet?.virtualAccount?.bankName}:
+                  {wallet?.virtualAccount?.accountNumber}
                 </Text>
                 <Image
                   source={require("@/assets/images/clipboard.png")}

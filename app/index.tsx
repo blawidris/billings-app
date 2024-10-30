@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Redirect, router } from "expo-router";
+import { Redirect, router, usePathname } from "expo-router";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { Alert, BackHandler } from "react-native";
 
 export default function Index() {
   const checkData = async () => {
@@ -19,6 +19,12 @@ export default function Index() {
       }
     }
   };
+
+  const pathname = usePathname();
+
+  const paths = ["/login", "/home"];
+
+  useEffect(() => {}, [pathname, paths]);
 
   useEffect(() => {
     setTimeout(checkData, 3000);

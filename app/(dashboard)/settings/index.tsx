@@ -1,10 +1,34 @@
 import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Iconify } from "react-native-iconify";
 import { router } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserData } from "@/services/api";
 
 export default function profile() {
+  const dispatch = useDispatch();
+  const username = useSelector((state: any) => state.bvn.username);
+  const [user, setUser] = useState();
+  const [wallet, setWallet] = useState();
+  const firstName = useSelector((state: any) => state.signUp.firstName);
+  const lastName = useSelector((state: any) => state.signUp.lastName);
+  const [virtualAccount, setVirtualAccount] = useState("");
+
+  useEffect(() => {
+    const getInfo = async () => {
+      const token = await AsyncStorage.getItem("token");
+      const userDataResponse = await getUserData(token);
+      setUser(userDataResponse.user);
+      setWallet(userDataResponse.wallet);
+      console.log(userDataResponse);
+      console.log(userDataResponse.wallet);
+    };
+
+    getInfo();
+  }, []);
+
   const logOut = async () => {
     try {
       Alert.alert("Logout", "Are you sure you want to logout?", [

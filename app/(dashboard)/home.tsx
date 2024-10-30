@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Clipboard from "expo-clipboard";
+import useBackPressHandler from "@/hooks/useBackHandler";
 
 export default function home() {
   const dispatch = useDispatch();
@@ -20,6 +21,8 @@ export default function home() {
   const firstName = useSelector((state: any) => state.signUp.firstName);
   const lastName = useSelector((state: any) => state.signUp.lastName);
   const [virtualAccount, setVirtualAccount] = useState("");
+
+  useBackPressHandler(["/login", "/home"]);
 
   useEffect(() => {
     const getInfo = async () => {
@@ -39,7 +42,7 @@ export default function home() {
     // }
   }, []);
 
-  const copyToClipboard = async (text) => {
+  const copyToClipboard = async (text: any) => {
     await Clipboard.setStringAsync(text);
   };
 
@@ -101,7 +104,7 @@ export default function home() {
                 className="flex flex-row items-center p-2 mr-1 rounded-full"
               >
                 <Text className="mr-1 text-sm text-white font-aeonik">
-                  {wallet?.virtualAccount?.accountNumber}:
+                  {wallet?.virtualAccount?.bankName}:
                   {wallet?.virtualAccount?.accountNumber}
                 </Text>
                 <Image

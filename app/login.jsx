@@ -47,6 +47,7 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { Iconify } from "react-native-iconify";
 import * as LocalAuthentication from "expo-local-authentication";
+import useBackPressHandler from "@/hooks/useBackHandler";
 
 export default function LoginScreen() {
   const dispatch = useDispatch();
@@ -75,6 +76,8 @@ export default function LoginScreen() {
       });
     }
   };
+
+  useBackPressHandler(["/login", "/(dashboard)/home"]);
 
   const fingerPrintLogin = async () => {
     try {
@@ -110,26 +113,7 @@ export default function LoginScreen() {
     }
   };
 
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert("Hold on!", "Are you sure you want to go back?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel",
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() }, // Adjust the navigation target
-      ]);
-      return true; // Prevent default back action
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-
-    return () => backHandler.remove();
-  }, [router]);
+  useEffect(() => {}, [router]);
 
   return (
     <Container>
