@@ -90,7 +90,13 @@ export default function LoginScreen() {
       await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
       if (isSuccessResponse(response)) {
-        console.log({ userInfo: response.data });
+        setEmail(response.data.user.email);
+        setPassword(response.data.user.id);
+        handleLogin();
+        console.log({
+          userInfo: response.data.user,
+          id: response.data.idToken,
+        });
       } else {
         // sign in was cancelled by user
       }
@@ -178,15 +184,7 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
       </Form>
-      <View className="flex items-center p-4 mt-4">
-        <TouchableOpacity
-          onPress={fingerPrintLogin}
-          className="flex flex-row gap-2"
-        >
-          <Iconify icon="ri:fingerprint-fill" size={20} color="#1F6CAB" />
-          <Text>Sign in with Biometrics</Text>
-        </TouchableOpacity>
-      </View>
+
       <View
         styles={{
           flex: 1,

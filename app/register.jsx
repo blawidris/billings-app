@@ -48,6 +48,13 @@ import OrDivider from "@/utils/OrDivider";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { ActivityIndicator } from "react-native";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+  isSuccessResponse,
+  isErrorWithCode,
+} from "@react-native-google-signin/google-signin";
 
 export default function SignUpOneScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -202,7 +209,7 @@ export default function SignUpOneScreen({ navigation }) {
           router.push("/otp");
         });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       Toast.show({
         type: "error",
         text1: "SignUp Failed",
@@ -211,6 +218,41 @@ export default function SignUpOneScreen({ navigation }) {
     } finally {
       // This will execute regardless of success or failure
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      if (isSuccessResponse(response)) {
+        setEmail(response.data.user.email);
+        setPassword(response.data.user.id);
+        setFirstName(response.data.user.givenName);
+        setLastName(response.data.user.familyName);
+        console.log({
+          userInfo: response.data.user,
+          id: response.data.idToken,
+        });
+      } else {
+        // sign in was cancelled by user
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        console.log(error);
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            // operation (eg. sign in) already in progress
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            // Android only, play services not available or outdated
+            break;
+          default:
+          // some other error happened
+        }
+      } else {
+        // an error that's not related to google sign in occurred
+      }
     }
   };
 
@@ -372,7 +414,7 @@ export default function SignUpOneScreen({ navigation }) {
           <OrDivider />
         </View>
         <SocialButtons>
-          <SocialButton>
+          <SocialButton onPress={handleGoogleSignUp}>
             <Google />
           </SocialButton>
           <SocialButton>
@@ -384,6 +426,7 @@ export default function SignUpOneScreen({ navigation }) {
         </SignupFooterText>
         {/* <Support /> */}
         <SupportText>Chat with support</SupportText>
+        <View className="h-20"></View>
       </ScrollView>
       <Image
         source={require("@/assets/pattern.png")}

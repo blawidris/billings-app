@@ -1,173 +1,137 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
-  View,
-  TouchableOpacity,
-  ScrollView,
   Text,
-  Image,
+  TextInput,
+  ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
+  Image,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  OTPContainer,
-  OTPInput,
-  OtpBackground,
-  WelcomeOverlay,
-  MailCover,
-  SubmitButton,
-  SubmitButtonText,
-  OTPHeaderText,
-  OTPHeaderSubHeaderText,
-  OTPFooterText,
-  SupportContainer,
-} from "@/components/account.styles";
-import Support from "@/assets/icons/Support";
-import {
-  verifyOTP,
-  loginSuccess,
-  sendOTP,
-} from "@/redux/slices/authentication/authSlice";
 import Toast from "react-native-toast-message";
+import {
+  Container,
+  Header,
+  HeaderText,
+  SubHeaderText,
+  Form,
+  Input,
+  ContinueButton,
+  ContinueButtonText,
+} from "@/components/account.styles";
+import { useDispatch, useSelector } from "react-redux";
+import { verifyBVN, setBvnInfo } from "@/redux/slices/bvnSlice/bvnSlice";
+import { setSignUpInfo, signUp } from "@/redux/slices/authentication/authSlice";
 import { router } from "expo-router";
-import { Iconify } from "react-native-iconify";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { host } from "@/utils/env";
 
-export default function OTPVerificationScreen({ navigation }) {
+export default function SignUpTwoScreen() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
-  const email = useSelector((state) => state.signUp.email);
-  const reference = useSelector((state) => state.signUp.reference);
-  const [otp, setOTP] = useState(["", "", "", ""]); // Updated to 4 characters
-  const [timer, setTimer] = useState(59);
-  const isOTPSuccessful = useSelector((state) => state.signUp.isOTPSuccessful);
+  const bvnState = useSelector((state) => state.bvn);
+  const token = useSelector((state) => state.signUp.token);
+
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(bvnState.username || "");
+  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    let interval = null;
-
-    if (timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [timer]);
-
-  useEffect(() => {
-    if (isOTPSuccessful) {
-      dispatch(loginSuccess({ email }));
-      router.push("/register2");
-    }
-  }, [isOTPSuccessful, dispatch, navigation]);
-
-  const handleOTPChange = (value, index) => {
-    const newOTP = [...otp];
-    newOTP[index] = value;
-    setOTP(newOTP);
-    if (value && index < 3) {
-      const nextInput = `otp${index + 1}`;
-      this[nextInput].focus();
-    }
-  };
-
-  const handleSubmitOTP = async () => {
-    const otpCode = otp.join("");
-    console.log("Submitting OTP:", otpCode);
-    console.log("Reference:", reference);
-
+  const handleFinish = async () => {
+    const token = await AsyncStorage.getItem("token");
     setIsLoading(true);
-
     try {
-      if (otpCode.length === 4) {
-        await dispatch(verifyOTP({ code: otpCode, reference }))
-          .unwrap()
-          .then((response) => {
-            console.log("OTP Verification Response:", response); // Debugging log
-          });
+      console.log("Token before BVN verification:", token);
+
+      AsyncStorage.setItem("token", token);
+
+      if (!token) {
+        throw new Error("Token is not available");
+      }
+      dispatch(setBvnInfo({ bvn, username }));
+
+      // Verify BVN
+      const response = await axios.post(``, {});
+
+      //console.log(response);
+
+      if (response.statusCode) {
+        Toast.show({
+          type: "success",
+          text1: "Sign Up Successful",
+          text2: "You have successfully signed up!",
+        });
+
+        // Navigate to Home page
+        router.push("/transaction_pin");
       } else {
+        console.log(error.response);
+        setErrorMessage(
+          "BVN verification failed. Please check your BVN and try again."
+        );
         Toast.show({
           type: "error",
-          text1: "Invalid OTP",
-          text2: "Please enter a valid 4-digit OTP.",
+          text1: "BVN Verification Failed",
+          text2: "Please check your BVN and try again.",
         });
       }
     } catch (error) {
-      console.error("OTP Verification Error:", error); // Debugging log
+      console.log(error.response);
+      setErrorMessage(
+        error.message ||
+          "An error occurred during BVN verification. Please try again."
+      );
       Toast.show({
         type: "error",
-        text1: "Verification Failed",
-        text2: "Incorrect verification code or reference",
+        text1: "Error",
+        text2:
+          error.message ||
+          "An error occurred during BVN verification. Please try again.",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleResendOTP = () => {
-    setTimer(59);
-    dispatch(sendOTP(email)).then(() => {
-      Toast.show({
-        type: "success",
-        text1: "OTP Sent",
-        text2: "A new OTP has been sent to your email.",
-      });
-    });
-  };
-
   return (
-    <OtpBackground>
-      <WelcomeOverlay />
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <OTPContainer>
-          <MailCover>
-            <Image source={require("@/assets/key.png")} />
-          </MailCover>
-          <OTPHeaderText>Forgot Password?</OTPHeaderText>
-          <OTPHeaderSubHeaderText>
-            Don't worry! it happens. Lets help you retrieve your password.
-          </OTPHeaderSubHeaderText>
-          <View className="gap-4 mt-5">
-            <TouchableOpacity className="flex flex-row items-center justify-between gap-2">
-              <Image source={require("@/assets/ftext.png")} />
-              <View>
-                <Text className="text-base text-white font-aeonik">
-                  Receive Code Via Text Message
-                </Text>
-                <Text className="text-sm text-white font-aeonik">
-                  **** **** **** 6686
-                </Text>
-              </View>
-              <Iconify icon="mdi:chevron-right" color="white" size={40} />
-            </TouchableOpacity>
-            <TouchableOpacity className="flex flex-row items-center justify-between gap-2">
-              <Image source={require("@/assets/fmail.png")} />
-              <View>
-                <Text className="text-base text-white font-aeonik">
-                  Receive Code Via Email Address
-                </Text>
-                <Text className="text-sm text-white font-aeonik">
-                  Emmanuel******@gmail.com
-                </Text>
-              </View>
-              <Iconify icon="mdi:chevron-right" color="white" size={40} />
-            </TouchableOpacity>
-          </View>
-
-          <SubmitButton onPress={() => router.back()}>
-            <SubmitButtonText>Go Back</SubmitButtonText>
-          </SubmitButton>
-        </OTPContainer>
-        <SupportContainer>
-          <Support />
-        </SupportContainer>
+    <Container>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Header>
+          <HeaderText>Forgot Password?</HeaderText>
+          <SubHeaderText>
+            Fill the details below and input your new password
+          </SubHeaderText>
+        </Header>
+        <Form>
+          <TextInput
+            placeholder="Enter your email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            placeholderTextColor="rgba(196, 196, 196, 1)"
+            className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
+          />
+          {errorMessage ? (
+            <Text style={{ color: "red", marginBottom: 10 }}>
+              {errorMessage}
+            </Text>
+          ) : null}
+          <TouchableOpacity
+            className="flex flex-row items-center justify-center p-5 mt-5 bg-[#1F6CAB] rounded-full"
+            onPress={handleFinish}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <ContinueButtonText>Continue</ContinueButtonText>
+            )}
+          </TouchableOpacity>
+        </Form>
       </ScrollView>
-    </OtpBackground>
+      <Image
+        source={require("@/assets/pattern.png")}
+        className="absolute bottom-0"
+      />
+    </Container>
   );
 }
