@@ -187,13 +187,19 @@ export default function home() {
             <Wifi width={50} height={50} />
             <Text className="font-aeonik">Data</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex items-center justify-center p-3 border border-gray-400 rounded-md">
+          <TouchableOpacity
+            onPress={() => router.push("/cable")}
+            className="flex items-center justify-center p-3 border border-gray-400 rounded-md"
+          >
             <Radio width={50} height={50} />
             <Text className="font-aeonik">Cable Tv</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex items-center justify-center p-3 border border-gray-400 rounded-md">
+          <TouchableOpacity
+            onPress={() => router.push("/power")}
+            className="flex items-center justify-center p-3 border border-gray-400 rounded-md"
+          >
             <More width={50} height={50} />
-            <Text className="font-aeonik">More</Text>
+            <Text className="font-aeonik">Power</Text>
           </TouchableOpacity>
         </View>
       </View>
