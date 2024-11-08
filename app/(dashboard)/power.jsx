@@ -54,7 +54,7 @@ export default function DataPurchase() {
   const getOperators = async () => {
     try {
       const response = await axios.get(
-        `${host}/vtpass/operators?data=tv-subscription`
+        `${host}/vtpass/operators?data=electricity-bill`
       );
 
       // console.log(response.data);
@@ -115,7 +115,7 @@ export default function DataPurchase() {
 
       console.log(data);
 
-      const response = await axios.post(`${host}/vtpass/purchase-cable`, data, {
+      const response = await axios.post(`${host}/vtpass/purchase-power`, data, {
         headers: myHeaders,
       });
 

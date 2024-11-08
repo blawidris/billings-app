@@ -27,6 +27,7 @@ export default function TabsView() {
       <Tabs.Screen name="transfer" options={{ title: "", href: null }} />
       <Tabs.Screen name="card" options={{ title: "", href: null }} />
       <Tabs.Screen name="cable" options={{ title: "", href: null }} />
+      <Tabs.Screen name="power" options={{ title: "", href: null }} />
       <Tabs.Screen name="data" options={{ title: "", href: null }} />
       <Tabs.Screen name="settings/index" options={{ title: "", href: null }} />
       <Tabs.Screen

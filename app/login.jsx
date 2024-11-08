@@ -65,12 +65,13 @@ export default function LoginScreen() {
       Toast.show({ type: "success", text1: "Login Successful" });
       router.push("/home");
     } else {
+      console.log("d", resultAction.payload);
       const errorMsg =
         resultAction.payload || "Failed to login. Please try again.";
       console.log(errorMsg);
       Toast.show({
         type: "error",
-        text1: "Login Failed",
+        text1: errorMsg,
         text2: errorMsg.message,
         position: "top",
       });

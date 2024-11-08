@@ -108,7 +108,8 @@ export const login = createAsyncThunk(
 
       return { ...loginResponse, userData: userDataResponse };
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      console.log(error.response.data.message);
+      return rejectWithValue(error.response.data.message);
     }
   }
 );
