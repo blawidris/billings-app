@@ -42,19 +42,17 @@ export default function SignUpTwoScreen() {
     const token = await AsyncStorage.getItem("token");
     setIsLoading(true);
     try {
-      console.log("Token before BVN verification:", token);
-
-      AsyncStorage.setItem("token", token);
-
-      if (!token) {
-        throw new Error("Token is not available");
-      }
-      dispatch(setBvnInfo({ bvn, username }));
-
+      console.log(`${host}/authentication/reset-check-name`, response);
       // Verify BVN
-      const response = await axios.post(``, {});
+      const response = await axios.get(
+        `${host}/authentication/reset-check-name`,
+        {
+          email: email,
+        }
+      );
 
-      //console.log(response);
+      console.log(`${host}/authentication/reset-check-name`, response);
+      console.log(`${host}/authentication/reset-check-name`, response);
 
       if (response.statusCode) {
         Toast.show({
@@ -64,7 +62,7 @@ export default function SignUpTwoScreen() {
         });
 
         // Navigate to Home page
-        router.push("/transaction_pin");
+        router.push("/forgot-password/select");
       } else {
         console.log(error.response);
         setErrorMessage(
@@ -111,11 +109,6 @@ export default function SignUpTwoScreen() {
             placeholderTextColor="rgba(196, 196, 196, 1)"
             className="p-2 h-full border-[0.5px] border-gray-400 mt-3 rounded-md flex-1 text-[rgba(196, 196, 196, 1)]"
           />
-          {errorMessage ? (
-            <Text style={{ color: "red", marginBottom: 10 }}>
-              {errorMessage}
-            </Text>
-          ) : null}
           <TouchableOpacity
             className="flex flex-row items-center justify-center p-5 mt-5 bg-[#1F6CAB] rounded-full"
             onPress={handleFinish}
