@@ -84,7 +84,7 @@ export default function DataPurchase() {
         }
       );
 
-      //console.log(response.data.data.varations[0]);
+      console.log(response.data.data.varations[0]);
       setBundle(response.data.data.varations);
     } catch (error) {
       console.log(error.response);

@@ -49,6 +49,8 @@ export default function DataPurchase() {
   const [bundles, setBundle] = useState([]);
   const [otp, setOTP] = useState(["", "", "", ""]);
 
+  const [meterNumber, setMeterNumber] = useState("");
+
   const [billerId, setBillerId] = useState("");
 
   const getOperators = async () => {
@@ -84,8 +86,8 @@ export default function DataPurchase() {
         }
       );
 
-      //console.log(response.data.data.varations[0]);
-      setBundle(response.data.data.varations);
+      console.log(response.data.data.varations[0]);
+      setBundle(response.data.data.varations[0]);
     } catch (error) {
       console.log(error.response);
     } finally {
@@ -97,6 +99,8 @@ export default function DataPurchase() {
     try {
       const token = await AsyncStorage.getItem("token");
 
+      console.log("loading");
+
       const myHeaders = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -104,13 +108,15 @@ export default function DataPurchase() {
 
       setIsLoading(true);
 
+      console.log(selectedBundle);
+
       const data = {
-        amount: parseFloat(selectedBundle.variation_amount) ?? 0,
-        variation_code: selectedBundle.variation_code,
-        phone: amount,
-        serviceID: selectedOption.serviceID,
+        amount: parseFloat(amount) ?? 0,
+        variation_code: "0.00",
+        phone: phoneNumber,
+        serviceID: "prepaid",
         pin: Number(otp.join("")),
-        billersCode: amount,
+        billersCode: phoneNumber,
       };
 
       console.log(data);
@@ -126,8 +132,8 @@ export default function DataPurchase() {
       console.log(response.data);
     } catch (error) {
       router.push("/data_error");
-      console.log(error.response);
-      console.log(error.response.data);
+      console.log(error);
+      //console.log(error.response.data);
     } finally {
       setIsLoading(false);
     }
@@ -224,42 +230,9 @@ export default function DataPurchase() {
           </View>
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Meter Number"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter amount"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
-          <View style={styles.currency}>
-            <Text style={styles.currencyText}>NGN</Text>
-          </View>
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
-        </View>
-
         {/* Dropdown List */}
         {showDropdown && (
-          <View>
+          <View style={{ zIndex: 40 }}>
             <FlatList
               style={styles.dropdown}
               data={options}
@@ -290,6 +263,39 @@ export default function DataPurchase() {
             />
           </View>
         )}
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Meter Number"
+            keyboardType="numeric"
+            value={meterNumber}
+            onChangeText={setMeterNumber}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter amount"
+            keyboardType="numeric"
+            value={amount}
+            onChangeText={setAmount}
+          />
+          <View style={styles.currency}>
+            <Text style={styles.currencyText}>NGN</Text>
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            keyboardType="numeric"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+          />
+        </View>
 
         <View style={styles.schedulePayment}>
           <Text style={styles.paymentText}>Save Benefiaciary</Text>
@@ -394,7 +400,7 @@ export default function DataPurchase() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={"schedulePayment"}
-              amount={selectedBundle.variation_amount}
+              amount={amount}
               phoneNumber={phoneNumber}
               selectedOption={selectedOption}
               sub={"Data"}
@@ -649,7 +655,7 @@ const styles = StyleSheet.create({
     top: -40,
     width: "100%",
     backgroundColor: "#fff",
-    zIndex: 10,
+    zIndex: 100,
     borderRadius: 10,
     // Shadow for iOS
     shadowColor: "#000",

@@ -51,8 +51,8 @@ export default function SignUpTwoScreen() {
         }
       );
 
-      console.log(`${host}/authentication/reset-check-name`, response);
-      console.log(`${host}/authentication/reset-check-name`, response);
+      // console.log(`${host}/authentication/reset-check-name`, response);
+      // console.log(`${host}/authentication/reset-check-name`, response);
 
       if (response.statusCode) {
         Toast.show({
