@@ -28,6 +28,7 @@ export default function DataPurchase() {
   const [bottomSheetType, setBottomSheetType] = useState("saveBeneficiary");
 
   const [options, setOptions] = useState([]);
+  const [paymentType, setPaymentType] = useState("prepaid");
 
   const [amount, setAmount] = useState("");
   const predefinedAmounts = [100, 500, 1000, 2000, 3000];
@@ -112,11 +113,11 @@ export default function DataPurchase() {
 
       const data = {
         amount: parseFloat(amount) ?? 0,
-        variation_code: "0.00",
+        variation_code: paymentType,
         phone: phoneNumber,
         serviceID: "prepaid",
         pin: Number(otp.join("")),
-        billersCode: phoneNumber,
+        billersCode: meterNumber,
       };
 
       console.log(data);
@@ -295,6 +296,34 @@ export default function DataPurchase() {
             value={phoneNumber}
             onChangeText={setPhoneNumber}
           />
+        </View>
+
+        {/* Radio Buttons for Payment Type */}
+        <View style={styles.radioContainer}>
+          <TouchableOpacity
+            style={styles.radioButton}
+            onPress={() => setPaymentType("prepaid")}
+          >
+            <View
+              style={[
+                styles.radioCircle,
+                paymentType === "prepaid" && styles.radioSelected,
+              ]}
+            />
+            <Text style={styles.radioLabel}>Prepaid</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.radioButton}
+            onPress={() => setPaymentType("postpaid")}
+          >
+            <View
+              style={[
+                styles.radioCircle,
+                paymentType === "postpaid" && styles.radioSelected,
+              ]}
+            />
+            <Text style={styles.radioLabel}>Postpaid</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.schedulePayment}>
@@ -679,7 +708,30 @@ const styles = StyleSheet.create({
     position: "relative",
     backgroundColor: "#fff",
   },
-
+  radioContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginVertical: 16,
+  },
+  radioButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radioCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#007BFF",
+    marginRight: 8,
+  },
+  radioSelected: {
+    backgroundColor: "#007BFF",
+  },
+  radioLabel: {
+    fontSize: 16,
+  },
   option: {
     paddingVertical: 10,
     paddingHorizontal: 15,
