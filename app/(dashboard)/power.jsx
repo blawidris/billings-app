@@ -304,25 +304,26 @@ export default function DataPurchase() {
             style={styles.radioButton}
             onPress={() => setPaymentType("prepaid")}
           >
+            <Text style={styles.radioLabel}>Prepaid</Text>
             <View
               style={[
                 styles.radioCircle,
                 paymentType === "prepaid" && styles.radioSelected,
               ]}
             />
-            <Text style={styles.radioLabel}>Prepaid</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            className="space-x-3"
             style={styles.radioButton}
             onPress={() => setPaymentType("postpaid")}
           >
+            <Text style={styles.radioLabel}>Postpaid</Text>
             <View
               style={[
                 styles.radioCircle,
                 paymentType === "postpaid" && styles.radioSelected,
               ]}
             />
-            <Text style={styles.radioLabel}>Postpaid</Text>
           </TouchableOpacity>
         </View>
 
@@ -711,7 +712,7 @@ const styles = StyleSheet.create({
   radioContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    //justifyContent: "space-around",
     marginVertical: 16,
   },
   radioButton: {
@@ -723,7 +724,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: "#007BFF",
+    borderColor: "gray",
     marginRight: 8,
   },
   radioSelected: {

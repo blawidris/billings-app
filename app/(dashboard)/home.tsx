@@ -127,6 +127,7 @@ export default function home() {
 
               <View className="items-center gap-2">
                 <TouchableOpacity
+                  onPress={() => router.push("/send_money")}
                   style={{ backgroundColor: "rgba(255, 255, 255, 0.5)" }}
                   className="flex items-center justify-center p-2 rounded-full w-14 h-14"
                 >

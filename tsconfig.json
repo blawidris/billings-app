@@ -14,6 +14,7 @@
     "nativewind-env.d.ts",
     "custom.d.ts",
     "services/AuthService.js",
-    "app/register.jsx"
+    "app/register.jsx",
+    "app/send_money/index.jsx"
   ]
 }
