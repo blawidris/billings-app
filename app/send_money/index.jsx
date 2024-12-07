@@ -21,7 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { host } from "@/utils/env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function BuyAirtimeScreen() {
   const [bottomSheetType, setBottomSheetType] = useState("saveBeneficiary");
@@ -52,28 +52,12 @@ export default function BuyAirtimeScreen() {
       icon: require("@/assets/icons/airtel.png"),
     },
   ];
-  const [amount, setAmount] = useState("");
-  const predefinedAmounts = [100, 500, 1000, 2000, 3000];
-  const [isScheduledEnabled, setIsScheduledEnabled] = useState(false);
-  const [isSavedEnabled, setIsSavedEnabled] = useState(false);
-  const [isEnterPassword, setIsEnterPassword] = useState(false);
-  const [isPayNow, setIsPayNow] = useState(false);
 
-  const [permissionStatus, setPermissionStatus] = useState(null);
-  const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts);
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState();
   const [userList, setUserList] = useState([]);
-
-  const [otp, setOTP] = useState(["", "", "", ""]);
-
-  const handleSelect = (option) => {
-    setSelectedOption(option);
-    setShowDropdown(false);
-  };
 
   const fetchUsers = async (query) => {
     if (!query) {
@@ -84,10 +68,22 @@ export default function BuyAirtimeScreen() {
 
     try {
       setIsLoading(true);
-      const response = await axios.get(`${host}/p2p/find/${query}`);
-      console.log(response.data);
-      setUserList({ ...userList, ...response.data?.data });
-      setShowDropdown(data.length > 0);
+      console.log("fetching users");
+      const token = await AsyncStorage.getItem("token");
+      const response = await axios.get(`${host}/p2p/find/${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response);
+      const data = response.data?.data;
+      const userData = response.data?.data;
+
+      if (userData) {
+        setUserList((prevList) => [...prevList, userData]); // Push the object into the list
+        setShowDropdown(true);
+      } else {
+        setUserList([]);
+        setShowDropdown(false);
+      }
     } catch (error) {
       //console.error("Error fetching users:", error);
       console.log(error.response);
@@ -126,6 +122,12 @@ export default function BuyAirtimeScreen() {
         </View>
       </View>
 
+      <View className="px-5">
+        <Text className="text-black">
+          Enter the receiver paybills tag to send money
+        </Text>
+      </View>
+
       <View style={styles.amountContainer}>
         <View className="mb-5">
           <View className="flex flex-row h-12 p-2 border border-gray-400 rounded-lg">
@@ -152,12 +154,12 @@ export default function BuyAirtimeScreen() {
             ) : (
               <FlatList
                 data={Array.isArray(userList) ? userList : []}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id}
                 className="absolute w-full bg-white rounded-lg shadow-md"
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     className="flex flex-row items-center p-4 bg-white"
-                    onPress={() => handleSelectUser(item)}
+                    onPress={() => router.push(`/send_money/${item.id}`)}
                   >
                     <Text style={styles.optionText}>
                       {item.firstName} - {item.lastName}
@@ -205,6 +207,29 @@ export default function BuyAirtimeScreen() {
 
         <View className="h-56 p-5 bg-white top-3 rounded-xl">
           <Text>Recent Recipent</Text>
+
+          {userList &&
+            userList.map((user, index) => (
+              <View
+                key={index}
+                className="flex mb-2 flex-row items-center space-x-3 gap-2"
+              >
+                <View>
+                  <Image
+                    className="w-10 h-10 rounded-full"
+                    source={{
+                      uri: "https://images.unsplash.com/photo-1698745219621-b343bbd31637?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    }}
+                  />
+                </View>
+                <View>
+                  <Text>
+                    {user.firstName} - {user.lastName}
+                  </Text>
+                  <Text>{user.email}</Text>
+                </View>
+              </View>
+            ))}
         </View>
       </View>
     </View>

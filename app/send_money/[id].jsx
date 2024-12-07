@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -16,19 +16,45 @@ import { Switch } from "react-native-switch";
 import * as Contacts from "expo-contacts";
 import { useDispatch, useSelector } from "react-redux";
 import { setContacts } from "@/redux/slices/contact/contactSlice";
-import { CustomBottomSheet } from "@/components/bottomsheets/customButtomSheet";
+import { CustomBottomSheet } from "@/components/bottomsheets/sendMoneyBottomSheet";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { host } from "@/utils/env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import Toast from "react-native-toast-message";
 
-export default function DataPurchase() {
+export default function BuyAirtimeScreen() {
   const [bottomSheetType, setBottomSheetType] = useState("saveBeneficiary");
 
-  const [options, setOptions] = useState([]);
+  const { id } = useLocalSearchParams();
 
+  const options = [
+    {
+      id: 1,
+      name: "MTN",
+      serviceID: "mtn",
+      icon: require("@/assets/icons/mtn.png"),
+    }, // Replace with the actual path to the icon
+    {
+      id: 2,
+      serviceID: "etisalat",
+      name: "9-Mobile",
+      icon: require("@/assets/icons/9mobile.jpg"),
+    },
+    {
+      id: 3,
+      name: "GLO",
+      serviceID: "glo",
+      icon: require("@/assets/icons/glo.png"),
+    },
+    {
+      id: 4,
+      name: "Airtel",
+      serviceID: "airtel",
+      icon: require("@/assets/icons/airtel.png"),
+    },
+  ];
   const [amount, setAmount] = useState("");
   const predefinedAmounts = [100, 500, 1000, 2000, 3000];
   const [isScheduledEnabled, setIsScheduledEnabled] = useState(false);
@@ -36,62 +62,12 @@ export default function DataPurchase() {
   const [isEnterPassword, setIsEnterPassword] = useState(false);
   const [isPayNow, setIsPayNow] = useState(false);
 
-  const [permissionStatus, setPermissionStatus] = useState(null);
-  const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts);
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState();
-  const [selectedBundle, setSelectedBundle] = useState(null);
-  const [showBundleDropdown, setShowBundleDropdown] = useState(false);
 
-  const [bundles, setBundle] = useState([]);
   const [otp, setOTP] = useState(["", "", "", ""]);
-
-  const [billerId, setBillerId] = useState("");
-
-  const getOperators = async () => {
-    try {
-      const response = await axios.get(
-        `${host}/vtpass/operators?data=tv-subscription`
-      );
-
-      // console.log(response.data);
-      setOptions(response.data.data);
-    } catch (error) {
-      console.log(error.data);
-      Toast.show({ type: "error", text1: "An occurred getting operators" });
-    }
-  };
-
-  const getDataVariations = async (serviceID) => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-
-      const myHeaders = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
-
-      setIsLoading(true);
-
-      const response = await axios.get(
-        `${host}/vtpass/variations?data=${serviceID}`,
-
-        {
-          headers: myHeaders,
-        }
-      );
-
-      console.log(response.data.data.varations[0]);
-      setBundle(response.data.data.varations);
-    } catch (error) {
-      console.log(error.response);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handlePayment = async () => {
     try {
@@ -105,67 +81,30 @@ export default function DataPurchase() {
       setIsLoading(true);
 
       const data = {
-        amount: parseFloat(selectedBundle.variation_amount) ?? 0,
-        variation_code: selectedBundle.variation_code,
-        phone: amount,
-        serviceID: selectedOption.serviceID,
+        amount: parseFloat(amount),
+        beneficiaryUserId: id,
+        saveBeneficiary: isScheduledEnabled,
         pin: Number(otp.join("")),
-        billersCode: amount,
-        subscription_type: 'change'
       };
 
-      console.log(data);
-
-      const response = await axios.post(`${host}/vtpass/purchase-cable`, data, {
+      const response = await axios.post(`${host}/p2p/send`, data, {
         headers: myHeaders,
       });
 
       if (response.status == 201) {
-        router.push("/data_success");
+        router.push("/transfer_success");
       }
 
-      console.log(response.data);
+      // console.log(otp);
     } catch (error) {
-      router.push("/data_error");
-      console.log(error.response);
+      router.push("/transfer_error");
+      console.log(error);
       console.log(error.response.data);
+      Toast.show({ type: "error", text1: error.response.data.message });
     } finally {
+      setIsEnterPassword(false);
       setIsLoading(false);
     }
-  };
-
-  const handleSelect = async (option) => {
-    setSelectedOption(option);
-    setShowDropdown(false);
-
-    await getDataVariations(option.serviceID);
-  };
-  const handleBeneficiary = () => {
-    //navigation.navigate("Beneficiary");
-  };
-  const handleUserIconPress = async () => {
-    // navigation.navigate("PhoneBook");
-    // console.log('permissionStatus', permissionStatus)
-    // if (permissionStatus === null) {
-    //   const { status } = await Contacts.requestPermissionsAsync();
-    //   setPermissionStatus(status);
-    // }
-    // if (permissionStatus === "granted") {
-    //   const { data } = await Contacts.getContactsAsync({
-    //     fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
-    //   });
-    //   if (data.length > 0) {
-    //     dispatch(setContacts(data));
-    //     console.log('Iwokr ')
-    //     navigation.navigate('PhoneBook')
-    //   } else {
-    //     Alert.alert("No contacts found");
-    //   }
-    // } else {
-    //   Alert.alert(
-    //     "Permission to access contacts was denied. Please enable it in your settings.",
-    //   );
-    // }
   };
 
   const bottomSheetRef = useRef(null);
@@ -178,11 +117,6 @@ export default function DataPurchase() {
     }
   };
 
-  useEffect(() => {
-    //getDataVariations();
-    getOperators();
-  }, []);
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -192,122 +126,46 @@ export default function DataPurchase() {
         >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Cable</Text>
+        <Text style={styles.headerTitle}>Send Money</Text>
       </View>
 
       <View style={styles.amountContainer}>
-        <View style={{ marginBottom: 20 }}>
-          <View style={[styles.inputContainer, { marginBottom: 0 }]}>
-            <TouchableOpacity
-              style={styles.selectedOption}
-              className="flex-1 w-full"
-              onPress={() => setShowDropdown(!showDropdown)}
-            >
-              {selectedOption?.image ? (
-                <Image
-                  source={{ uri: selectedOption.image }}
-                  style={styles.icon}
-                />
-              ) : (
-                <Image
-                  source={require("@/assets/airtel.png")}
-                  style={styles.icon}
-                />
-              )}
-              <Text style={styles.selectedText}>{selectedOption?.name}</Text>
-              <Image
-                source={require("@/assets/icons/caret-down.png")}
-                style={styles.dropdownArrow}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Biller ID"
+            placeholder="Enter amount"
             keyboardType="numeric"
             value={amount}
             onChangeText={setAmount}
           />
-        </View>
-
-        {/* Dropdown List */}
-        {showDropdown && (
-          <View>
-            <FlatList
-              style={styles.dropdown}
-              data={options}
-              keyExtractor={(item) => item.serviceID}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className="flex flex-row items-center justify-between p-4"
-                  onPress={() => handleSelect(item)}
-                >
-                  <View className="flex flex-row items-center space-x-4">
-                    {item?.image ? (
-                      <Image source={{ uri: item.image }} style={styles.icon} />
-                    ) : (
-                      <Image
-                        source={require("@/assets/airtel.png")}
-                        style={styles.icon}
-                      />
-                    )}
-                    <Text style={styles.optionText}>{item.name}</Text>
-                  </View>
-                  {item?.serviceID === selectedOption?.serviceID ? (
-                    <View style={styles.radioUnselected} />
-                  ) : (
-                    <View style={styles.radioUnselected} />
-                  )}
-                </TouchableOpacity>
-              )}
-            />
+          <View style={styles.currency}>
+            <Text style={styles.currencyText}>NGN</Text>
           </View>
-        )}
-
-        {/* Bundle Selection */}
-        <View style={{ marginBottom: 20 }}>
-          <TouchableOpacity
-            style={[styles.inputContainer, styles.bundleSelector]}
-            onPress={() => setShowBundleDropdown(!showBundleDropdown)}
-          >
-            <Text style={styles.selectedText}>
-              {selectedBundle ? selectedBundle.name : "Choose Bundle"}
-            </Text>
-            <Ionicons
-              name={showBundleDropdown ? "chevron-up" : "chevron-down"}
-              size={20}
-              color="rgba(31, 108, 171, 1)"
-            />
-          </TouchableOpacity>
-
-          {showBundleDropdown && (
-            <FlatList
-              style={styles.dropdown}
-              data={bundles}
-              keyExtractor={(item) => item.name}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => {
-                    setSelectedBundle(item);
-                    setShowBundleDropdown(false);
-                  }}
-                >
-                  <Text style={styles.optionText}>{item.name}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          )}
         </View>
+
+        <Text style={styles.selectAmountText}>Select amount</Text>
+        <FlatList
+          data={predefinedAmounts}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.amountButton}
+              onPress={() => setAmount(item.toString())}
+            >
+              <Text style={styles.amountText}>₦{item.toFixed(2)}</Text>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.predefinedAmounts}
+          style={styles.scrollContainer}
+        />
 
         <View style={styles.schedulePayment}>
           <Text style={styles.paymentText}>Save Benefiaciary</Text>
           <Switch
             value={isSavedEnabled}
-            onValueChange={() => toggleSwitch("saved")}
+            onValueChange={() => setIsSavedEnabled(!isSavedEnabled)}
             disabled={false}
             activeText={""}
             inActiveText={""}
@@ -369,32 +227,8 @@ export default function DataPurchase() {
         >
           <Text style={styles.payButtonText}>Proceed</Text>
         </TouchableOpacity>
-        <View className="h-[70px]"></View>
       </View>
 
-      <View>
-        <TextInput placeholder="Biller's Code" />
-      </View>
-
-      {isSavedEnabled && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isSavedEnabled}
-          onRequestClose={() => setIsSavedEnabled(false)}
-        >
-          <View style={{ flex: 1, backgroundColor: "rgba(31, 108, 171, 0.4)" }}>
-            <CustomBottomSheet
-              ref={bottomSheetRef}
-              type={bottomSheetType}
-              amount={amount}
-              phoneNumber={phoneNumber}
-              snapPoints="40%"
-              onClose={() => setIsSavedEnabled(false)}
-            />
-          </View>
-        </Modal>
-      )}
       {isPayNow && (
         <Modal
           animationType="slide"
@@ -406,10 +240,10 @@ export default function DataPurchase() {
             <CustomBottomSheet
               ref={bottomSheetRef}
               type={"schedulePayment"}
-              amount={selectedBundle.variation_amount}
+              amount={amount}
+              sub={"Transfer"}
               phoneNumber={phoneNumber}
               selectedOption={selectedOption}
-              sub={"Data"}
               handlePress={() => {
                 setIsPayNow(false);
                 setIsEnterPassword(true);
@@ -588,7 +422,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: 48,
-    bottom: 80,
+    bottom: 100,
     left: 20,
   },
   payButtonText: {
@@ -638,6 +472,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
+    backgroundColor: "white",
   },
   optionText: {
     flex: 1,
@@ -660,39 +495,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -40,
     width: "100%",
-    backgroundColor: "#fff",
-    zIndex: 10,
+    backgroundColor: "#ffffff",
+    zIndex: 50,
     borderRadius: 10,
     // Shadow for iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
 
     // Shadow for Android
     elevation: 5,
   },
   userIcon: {
     paddingLeft: 120,
-  },
-  bundleSelector: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    position: "relative",
-    backgroundColor: "#fff",
-  },
-
-  option: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-
-  optionText: {
-    fontSize: 16,
-    color: "#333",
   },
 });

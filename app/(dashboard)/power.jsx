@@ -115,7 +115,7 @@ export default function DataPurchase() {
         amount: parseFloat(amount) ?? 0,
         variation_code: paymentType,
         phone: phoneNumber,
-        serviceID: "prepaid",
+        serviceID: selectedOption.serviceID,
         pin: Number(otp.join("")),
         billersCode: meterNumber,
       };
@@ -126,14 +126,18 @@ export default function DataPurchase() {
         headers: myHeaders,
       });
 
-      if (response.status == 201) {
-        router.push("/data_success");
+      if (response.data.data.status == true) {
+        router.push("/power_success");
+        console.log(response.data.data);
+      } else {
+        Toast.show({ type: "error", text1: response.data.data.message });
+        router.push("/power_error");
       }
 
       console.log(response.data);
     } catch (error) {
       router.push("/data_error");
-      console.log(error);
+      console.log(error.response);
       //console.log(error.response.data);
     } finally {
       setIsLoading(false);
@@ -202,12 +206,14 @@ export default function DataPurchase() {
       </View>
 
       <View style={styles.amountContainer}>
-        <View style={{ marginBottom: 20 }}>
-          <View style={[styles.inputContainer, { marginBottom: 0 }]}>
+        <View style={{ marginBottom: 1 }}>
+          <View className="flex flex-row mb-5 border border-gray-300 rounded-lg">
             <TouchableOpacity
-              style={styles.selectedOption}
-              className="flex-1 w-full"
-              onPress={() => setShowDropdown(!showDropdown)}
+              className="flex flex-row items-center flex-1 w-full p-2"
+              onPress={() => {
+                setShowDropdown(!showDropdown);
+                console.log(selectedOption);
+              }}
             >
               {selectedOption?.image ? (
                 <Image
@@ -220,7 +226,7 @@ export default function DataPurchase() {
                   style={styles.icon}
                 />
               )}
-              <Text style={styles.selectedText}>
+              <Text className="flex-1 ml-2">
                 {selectedOption?.name ?? "Select service provider"}
               </Text>
               <Image
